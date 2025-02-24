@@ -10,8 +10,9 @@ class PaymentDashboard(BaseDashboard):
         pass
 
     def show_metrics(self):
-
+        col3, col4 = st.columns([2, 2])
         col1, _, col2 = st.columns([4, 0.12, 1.2])
+        
 
         with col1:  # Chart di sebelah kiri
             st.markdown("""
@@ -20,9 +21,9 @@ class PaymentDashboard(BaseDashboard):
                 div[data-testid="stDateInput"] { margin-top: -30px; }  
             </style>
         """, unsafe_allow_html=True)
-
+        
             with st.container():
-                col3, col4 = st.columns([2, 2])
+                
                 with col3:
                     start_date, end_date = st.date_input(
                     "Rentang Waktu",
