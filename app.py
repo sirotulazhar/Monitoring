@@ -4,17 +4,18 @@ from provinsi import ProvinceDashboard
 from kota import CityDashboard
 from payment import PaymentDashboard
 from merchant import MerchantDashboard
+from harian import Dashboardharian
+from laman_1 import TokoLadangDashboard
 import seaborn as sns
 from streamlit_option_menu import option_menu
 
 
 sns.set(style='dark')
 st.set_page_config(page_title='Toko Ladang', page_icon='🛒', layout='wide')
-
 st.markdown("""
                 <style>
                     .stAlert { margin-bottom: 0px !important; }  /* Hapus jarak bawah info */
-                    div[data-testid="stMetric"] { margin-top: -50px; }  /* Naikkan metric */
+                    div[data-testid="stMetric"] { margin-top: -90px; }  /* Naikkan metric */
                 </style>
             """, unsafe_allow_html=True)
 
@@ -52,9 +53,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-with st.sidebar:
+col6, col7 = st.columns([0.24, 0.7])  
+
+with col6:
     selected = option_menu(
-        menu_title=None,
+        menu_title="",  # Judul menu (opsional)
         options=[
             "Dashboard", 
             "Detail Harian Transaksi",  
@@ -71,19 +74,21 @@ with st.sidebar:
             "credit-card",  
             "shop",  
         ],
-        menu_icon="list",  # Ikon menu utama
+        default_index=0
     )
 
-# Menjalankan Dashboard yang Dipilih
-if selected == 'Dashboard':
-    st.title(f'hello')
-elif selected == 'Detail Harian Transaksi':
-    st.title(f'hello')
-elif selected == 'Wilayah Provinsi':
-    ProvinceDashboard(df).run()
-elif selected == 'Wilayah Kota / Kabupaten':
-    CityDashboard(df).run()
-elif selected == 'Per Metode Pembayaran':
-    PaymentDashboard(df).run()
-elif selected == 'Pendaftaran Merchant':
-    MerchantDashboard(df).run()
+with col7:
+    # Menjalankan Dashboard yang Dipilih
+    if selected == 'Dashboard':
+        TokoLadangDashboard(df).run()
+    elif selected == 'Detail Harian Transaksi':
+        Dashboardharian(df).run()
+    elif selected == 'Wilayah Provinsi':
+        ProvinceDashboard(df).run()
+    elif selected == 'Wilayah Kota / Kabupaten':
+        CityDashboard(df).run()
+    elif selected == 'Per Metode Pembayaran':
+        PaymentDashboard(df).run()
+    elif selected == 'Pendaftaran Merchant':
+        MerchantDashboard(df).run()
+
