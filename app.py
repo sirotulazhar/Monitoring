@@ -21,7 +21,7 @@ st.markdown("""
 
 st.markdown(
     """
-    <div style='background-color: #f0f0f0; padding: 5px; border-radius: 5px;'>
+    <div style= padding: 5px; border-radius: 5px;'>
         <h1 style='font-size: 32px; text-align: center;'>Monitoring Transaksi SIPLah Toko Ladang 2024, 2025</h1>
     </div>
     """,
