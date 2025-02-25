@@ -50,8 +50,8 @@ else:
 
     st.markdown(
         """
-        <div style= padding: 5px; border-radius: 5px;'>
-            <h1 style='font-size: 32px; text-align: center;'>Monitoring Transaksi SIPLah Toko Ladang</h1>
+        <div style="padding: 5px; border-radius: 5px; margin-left: 75px;">
+            <h1 style='font-size: 35px; text-align: center;'>Monitoring Transaksi SIPLah Toko Ladang</h1>
         </div>
         """,
         unsafe_allow_html=True
