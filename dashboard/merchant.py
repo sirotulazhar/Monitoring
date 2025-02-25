@@ -84,21 +84,20 @@ class MerchantDashboard(BaseDashboard):
 
                 st.altair_chart(chart + text, use_container_width=True)
 
-        with col5:
-            
-            st.markdown("""
+        st.markdown("""
                 <style>
                     .stAlert { margin-bottom: 0px !important; } 
                     div[data-testid="stMetric"] { margin-top: -30px; }  
                 </style>
             """, unsafe_allow_html=True)
 
-            st.markdown("""
-                <style>
-                    .stAlert { margin-bottom: 0px !important; } 
-                    div[data-testid="stInfo"] { margin-top: -30px; }  
-                </style>
-            """, unsafe_allow_html=True)
+        st.markdown("""
+            <style>
+                .stAlert { margin-bottom: 0px !important; } 
+                div[data-testid="stInfo"] { margin-top: -30px; }  
+            </style>
+        """, unsafe_allow_html=True)
+        with col5:
 
             total_merchant = self.filtered_df['jumlah_merchant'].sum()
 
