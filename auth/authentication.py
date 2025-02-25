@@ -1,7 +1,7 @@
 import pandas as pd
 
 def load_users():
-    return pd.read_csv("login.csv")
+    return pd.read_csv("data/login.csv")
 
 def authenticate(username, password):
     users = load_users()
