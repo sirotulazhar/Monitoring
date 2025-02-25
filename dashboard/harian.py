@@ -1,18 +1,16 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 from dashboard.utils import format_rupiah
 
 class Dashboardharian:
     def __init__(self,df):
-        self.df = df
+        self.df= df
         self.df = self.load_data()
         self.df_filtered = self.df.copy()
     
     def load_data(self):
-        df = pd.read_csv("data/cleaned_data.csv")
+        df = pd.read_csv("cleaned_data.csv")
         df["waktu"] = pd.to_datetime(df["waktu"])
         df["Bulan"] = df["waktu"].dt.to_period("M")
         hari_mapping = {
@@ -23,8 +21,8 @@ class Dashboardharian:
         return df
 
     def filter_data(self):
-        # st.text("📆 Filter Rentang Waktu") 
-        st.markdown("<br>",unsafe_allow_html=True) 
+        # st.subheader("📆 Filter Rentang Waktu")  
+        st.markdown("<br>",unsafe_allow_html=True)
         st.markdown("<style>div[data-testid='stDateInput'] {margin-top: -50px;}</style>", unsafe_allow_html=True)
         date_pilih = st.date_input("📆 Filter Rentang Waktu", value=self.df["waktu"].min().date())
         self.df_filtered = self.df[self.df["waktu"].dt.date == date_pilih]
@@ -65,7 +63,7 @@ class Dashboardharian:
             st.metric("", value=format_rupiah(total_pajak))
 
     def show_po_tren(self):
-        col1, _, col2 = st.columns([4,0.001, 2])  
+        col1, _, col2 = st.columns([4.3,0.001, 1.7])  
         with col1:
             st.subheader("Tren PO per Kota/Kabupaten")
             st.markdown("<style>div[data-testid='stSelectbox'] {margin-top: -50px;}</style>", unsafe_allow_html=True)
@@ -82,7 +80,7 @@ class Dashboardharian:
                 # Plot data
                 fig = px.bar(po_bulanan, x="jumlah_po", y="kota_kab_sekolah", 
                             labels={"kota_kab_sekolah": "Kota/Kabupaten", "jumlah_po": "Total PO"},
-                            color_discrete_sequence=["#F2B949"], width=600, height=500,text_auto=True)
+                            color_discrete_sequence=["#F2B949"], width=600, height=500)
 
                 fig.update_layout(margin=dict(t=10, b=100))
                 st.plotly_chart(fig, use_container_width=True)
@@ -91,8 +89,7 @@ class Dashboardharian:
 
         with col2:
             if not self.df_filtered.empty:
-                st.markdown("<br>", unsafe_allow_html=True)
-                st.markdown(" ")
+                st.markdown("<br><br>", unsafe_allow_html=True)
                 st.info("##### Total Kota/Kabupaten")  
                 total_kota = self.df_filtered["kota_kab_sekolah"].nunique()
                 st.metric(label="", value=f"{total_kota:,}")
@@ -102,17 +99,25 @@ class Dashboardharian:
                     "nominal_po": "sum"
                 }).reset_index()
 
-                po_terbesar = po_bulanan.nlargest(1, "nominal_po")
-                po_terkecil = po_bulanan.nsmallest(1, "nominal_po")
+                if not po_bulanan.empty:
+                    po_terbesar = po_bulanan.nlargest(1, "nominal_po").iloc[0]  
+                    po_terkecil = po_bulanan.nsmallest(1, "nominal_po").iloc[0]  
 
-                with st.container():
-                    st.write("##### PO Terbesar")
-                    st.data_editor(po_terbesar, hide_index=True,key='po_terbesar')
+                    with st.container():
+                        st.write("#### 📌 PO Terbesar")
+                        st.write(f"📍 **{po_terbesar['kota_kab_sekolah']}**")
+                        st.write(f"Jumlah PO: **{format_rupiah(po_terbesar['jumlah_po'])}**") 
+                        st.write(f"Nominal PO: **Rp {format_rupiah(po_terbesar['nominal_po'])}**")
 
-                with st.container():
-                    st.write("##### PO Terkecil")
-                    st.data_editor(po_terkecil, hide_index=True,key='po_terkecil')
+                    with st.container():
+                        st.write("#### 📌 PO Terkecil")
+                        st.write(f"📍 **{po_terkecil['kota_kab_sekolah']}**")
+                        st.write(f"Jumlah PO: **{format_rupiah(po_terkecil['jumlah_po'])}**")  
+                        st.write(f"Nominal PO: **Rp {format_rupiah(po_terkecil['nominal_po'])}**")
+                else:
+                    st.warning("Tidak ada data tersedia.")
 
+               
     def prov_tren(self):
         col1, _, col2 = st.columns([4.3, 0.001, 1.7])  
         with col1:
@@ -126,9 +131,9 @@ class Dashboardharian:
             prov_bulanan["prov_sekolah"] = prov_bulanan["prov_sekolah"].astype(str)
 
 
-            option = st.selectbox("", ["10 Terbesar", "10 Terkecil"], key="provinsi_selectbox")
+            pilih = st.selectbox("", ["10 Terbesar", "10 Terkecil"], key="provinsi_selectbox")
 
-            if option == "10 Terbesar":
+            if pilih == "10 Terbesar":
                 prov_bulanan = prov_bulanan.nlargest(10, "jumlah_po").sort_values("jumlah_po", ascending=True)
             else:
                 prov_bulanan = prov_bulanan.nsmallest(10, "jumlah_po").sort_values("jumlah_po", ascending=True)
@@ -136,13 +141,11 @@ class Dashboardharian:
             # Plot data
             fig = px.bar(prov_bulanan, x="jumlah_po", y="prov_sekolah", 
                         labels={"prov_sekolah": "Provinsi", "jumlah_po": "Total PO"},
-                        color_discrete_sequence=["#F2B949"], width=600, height=500,text_auto=True)
+                        color_discrete_sequence=["#F2B949"], width=600, height=500)
             fig.update_layout(margin=dict(t=10, b=100))
             st.plotly_chart(fig, use_container_width=True)
-        
+
         with col2:
-            st.markdown(" ", unsafe_allow_html=True)  
-            
             st.subheader("Metode Pembayaran Paling Sering Digunakan")
 
             if self.df_filtered.empty:
