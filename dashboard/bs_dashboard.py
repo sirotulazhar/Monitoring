@@ -1,6 +1,6 @@
 import streamlit as st
 from abc import ABC, abstractmethod
-from utils import format_rupiah
+from dashboard.utils import format_rupiah
 
 class BaseDashboard(ABC):
     def __init__(self, df):
