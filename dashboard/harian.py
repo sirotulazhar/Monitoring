@@ -42,27 +42,27 @@ class Dashboardharian:
         with col1:
             st.info("Total PO")
             total_po = self.df_filtered["jumlah_po"].sum()
-            st.metric("", value=self.format_rupiah(total_po))
+            st.metric("", value=format_rupiah(total_po))
         
         with col2:
             st.info("Total Nominal")
             nominal = self.df_filtered["nominal_po"].sum()
-            st.metric("", value=self.format_rupiah(nominal))
+            st.metric("", value=format_rupiah(nominal))
         
         with col3:
             st.info("Total PPh 22")
             total_pph = self.df_filtered["pph22"].sum()
-            st.metric("", value=self.format_rupiah(total_pph))
+            st.metric("", value=format_rupiah(total_pph))
         
         with col4:
             st.info("Total PPN")
             total_ppn = self.df_filtered["ppn"].sum()
-            st.metric("", value=self.format_rupiah(total_ppn))
+            st.metric("", value=format_rupiah(total_ppn))
         
         with col5:
             st.info('Total Pajak') 
             total_pajak = self.df_filtered[["ppn", "pph22"]].sum().sum()
-            st.metric("", value=self.format_rupiah(total_pajak))
+            st.metric("", value=format_rupiah(total_pajak))
 
     def show_po_tren(self):
         col1, _, col2 = st.columns([4,0.001, 2])  
