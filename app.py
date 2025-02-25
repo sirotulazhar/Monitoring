@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from data.data_loader import load_data
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
