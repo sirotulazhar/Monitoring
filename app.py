@@ -51,7 +51,7 @@ else:
     st.markdown(
         """
         <div style= padding: 5px; border-radius: 5px;'>
-            <h1 style='font-size: 32px; text-align: center;'>Monitoring Transaksi SIPLah Toko Ladang 2024, 2025</h1>
+            <h1 style='font-size: 32px; text-align: center;'>Monitoring Transaksi SIPLah Toko Ladang</h1>
         </div>
         """,
         unsafe_allow_html=True
