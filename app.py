@@ -1,11 +1,11 @@
 import streamlit as st
 from data_loader import load_data
-from provinsi import ProvinceDashboard
-from kota import CityDashboard
-from payment import PaymentDashboard
-from merchant import MerchantDashboard
-from harian import Dashboardharian
-from laman_1 import TokoLadangDashboard
+from dashboard.provinsi import ProvinceDashboard
+from dashboard.kota import CityDashboard
+from dashboard.payment import PaymentDashboard
+from dashboard.merchant import MerchantDashboard
+from dashboard.harian import Dashboardharian
+from dashboard.laman_1 import TokoLadangDashboard
 import seaborn as sns
 from streamlit_option_menu import option_menu
 
