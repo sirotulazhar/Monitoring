@@ -9,7 +9,7 @@ class ProvinceDashboard(BaseDashboard):
         pass
 
     def show_metrics(self):
-        col3, col4, _ = st.columns([2, 2, 1.24])
+        col3, col4 = st.columns([2, 2])
         col1, _, col2 = st.columns([4, 0.12, 1.2])
         
         with col1:  # Chart di sebelah kiri
@@ -113,4 +113,3 @@ class ProvinceDashboard(BaseDashboard):
 
     def show_visualization(self):
         pass
-        
