@@ -1,7 +1,7 @@
 import streamlit as st
 import altair as alt
 import pandas as pd
-from bs_dashboard import BaseDashboard
+from dashboard.bs_dashboard import BaseDashboard
 from dashboard.utils import format_rupiah
 
 class ProvinceDashboard(BaseDashboard):
