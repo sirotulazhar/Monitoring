@@ -3,7 +3,6 @@ import altair as alt
 import pandas as pd
 from bs_dashboard import BaseDashboard
 from utils import format_rupiah
-from data_loader import load_data
 
 class PaymentDashboard(BaseDashboard):
     def filter_data(self):
