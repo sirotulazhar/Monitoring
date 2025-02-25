@@ -2,7 +2,7 @@ import streamlit as st
 import altair as alt
 import pandas as pd
 from bs_dashboard import BaseDashboard
-from utils import format_rupiah
+from dashboard.utils import format_rupiah
 
 class ProvinceDashboard(BaseDashboard):
     def filter_data(self):
