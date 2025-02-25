@@ -19,25 +19,23 @@ class CityDashboard(BaseDashboard):
                 div[data-testid="stDateInput"] { margin-top: -30px; }  
             </style>
         """, unsafe_allow_html=True)
-
-            with st.container():
                 
-                with col3:
-                    start_date, end_date = st.date_input(
-                    "Rentang Waktu",
-                    value=[self.df['waktu'].min(), self.df['waktu'].max()],
-                    min_value=self.df['waktu'].min(),
-                    max_value=self.df['waktu'].max()
-                )
+            with col3:
+                start_date, end_date = st.date_input(
+                "Rentang Waktu",
+                value=[self.df['waktu'].min(), self.df['waktu'].max()],
+                min_value=self.df['waktu'].min(),
+                max_value=self.df['waktu'].max()
+            )
 
-                with col4:
-                    st.markdown("""
-                        <style>
-                            .stAlert { margin-bottom: -20px !important; } 
-                            div[data-testid="stSelectbox"] { margin-top: -45px; }  
-                        </style>
-                    """, unsafe_allow_html=True)
-                    self.selected_kota = st.selectbox("Kota/Kabupaten", options=self.df['kota_kab_sekolah'].unique())
+            with col4:
+                st.markdown("""
+                <style>
+                    .stAlert { margin-bottom: -20px !important; } 
+                    div[data-testid="stSelectbox"] { margin-top: -45px; }  
+                </style>
+            """, unsafe_allow_html=True)
+                self.selected_kota = st.selectbox("Kota/Kabupaten", options=self.df['kota_kab_sekolah'].unique())
 
             self.filtered_df = self.df[
                 (self.df['waktu'] >= pd.Timestamp(start_date)) &
@@ -73,52 +71,50 @@ class CityDashboard(BaseDashboard):
             df_grouped["nominal"] = df_grouped["nominal_po"] / 1_000_000
             df_grouped["formatted_nominal"] = df_grouped["nominal_po"].apply(format_rupiah)
 
-            with st.container():
-                chart = alt.Chart(df_grouped).mark_bar(color="#0083B8").encode(
-                    x=alt.X("periode:O", title="Periode", axis=alt.Axis(labelAngle=0)),
-                    y=alt.Y("nominal:Q", title="Total Transaksi"),
-                    tooltip=["periode", "formatted_nominal"]
-                ).properties(width=600, height=400)
+            chart = alt.Chart(df_grouped).mark_bar(color="#0083B8").encode(
+                x=alt.X("periode:O", title="Periode", axis=alt.Axis(labelAngle=0)),
+                y=alt.Y("nominal:Q", title="Total Transaksi"),
+                tooltip=["periode", "formatted_nominal"]
+            ).properties(width=600, height=400)
 
-                text = chart.mark_text(
-                    align='center',
-                    baseline='bottom',
-                    dy=-5
-                ).encode(
-                    text="formatted_nominal"
-                )
+            text = chart.mark_text(
+                align='center',
+                baseline='bottom',
+                dy=-5
+            ).encode(
+                text="formatted_nominal"
+            )
 
-                st.altair_chart(chart + text, use_container_width=True)
+            st.altair_chart(chart + text, use_container_width=True)
 
+        st.markdown("<h3 style='margin-bottom: 5px;'></h3>", unsafe_allow_html=True)
+        st.markdown("""
+                <style>
+                    div[data-testid="stMetric"] {
+                        margin-top: -15px !important; 
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+            
+        st.markdown("<h3 style='margin-bottom: 5px;'></h3>", unsafe_allow_html=True)
+        st.markdown("""
+                <style>
+                    div[data-testid="stMetric"] {
+                        margin-top: -15px !important; 
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+        
         with col2: 
+            
+            st.info('Jumlah PO', icon="🛒")
+            st.metric(label='', value=format_rupiah(total_pembelian))
 
-            st.markdown("""
-                <style>
-                    .stAlert { margin-bottom: 0px !important; } 
-                    div[data-testid="stMetric"] { margin-top: -30px; }  
-                </style>
-            """, unsafe_allow_html=True)
+            st.info('Jumlah Nominal', icon="💰")
+            st.metric(label='', value=format_rupiah(total_nominal))
 
-            st.markdown("""
-                <style>
-                    .stAlert { margin-bottom: 0px !important; } 
-                    div[data-testid="stInfo"] { margin-top: -30px; }  
-                </style>
-            """, unsafe_allow_html=True)
-
-            with st.container():
-                
-                st.info('Jumlah PO', icon="🛒")
-                st.metric(label='', value=format_rupiah(total_pembelian))
-
-            with st.container():
-                st.info('Jumlah Nominal', icon="💰")
-                st.metric(label='', value=format_rupiah(total_nominal))
-
-            with st.container():
-                st.info('Jumlah Pajak', icon="📊")
-                st.metric(label='', value=format_rupiah(total_pajak))  
+            st.info('Jumlah Pajak', icon="📊")
+            st.metric(label='', value=format_rupiah(total_pajak))  
 
     def show_visualization(self):
         pass
-        
