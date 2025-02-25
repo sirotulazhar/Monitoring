@@ -50,7 +50,7 @@ else:
 
     st.markdown(
         """
-        <div style="padding: 5px; border-radius: 5px; margin-left: 75px;">
+        <div style="padding: 5px; border-radius: 5px; margin-left: 80px;">
             <h1 style='font-size: 35px; text-align: center;'>Monitoring Transaksi SIPLah Toko Ladang</h1>
         </div>
         """,
