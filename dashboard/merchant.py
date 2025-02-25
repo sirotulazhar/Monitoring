@@ -104,5 +104,7 @@ class MerchantDashboard(BaseDashboard):
             st.info('Jumlah Merchant')
             st.metric(label="", value=format_angka(total_merchant))
 
+        st.caption("Dashboard ©️ 2025 by Toko Ladang")
+
     def show_visualization(self):
         pass
