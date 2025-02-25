@@ -101,7 +101,7 @@ class MerchantDashboard(BaseDashboard):
 
             total_merchant = self.filtered_df['jumlah_merchant'].sum()
 
-            st.info('Jumlah Merchant', icon="")
+            st.info('Jumlah Merchant')
             st.metric(label="", value=format_angka(total_merchant))
 
     def show_visualization(self):
