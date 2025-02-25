@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from dahsboard.utils import format_rupiah
+from dashboard.utils import format_rupiah
 
 class TokoLadangDashboard:
     def __init__(self,df):
