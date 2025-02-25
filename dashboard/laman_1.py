@@ -3,6 +3,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from dahsboard.utils import format_rupiah
 
 class TokoLadangDashboard:
     def __init__(self,df):
@@ -20,24 +21,6 @@ class TokoLadangDashboard:
         }
         df["Hari"] = df["Tanggal"].dt.day_name().map(hari_mapping)
         return df
-    
-    def format_number(self, num):
-        if num >= 1_000_000_000_000:
-            return f"{num / 1_000_000_000_000:.1f}T"
-        elif num >= 1_000_000_000:
-            return f"{num / 1_000_000_000:.1f}M"
-        elif num >= 1_000_000:
-            return f"{num / 1_000_000:.1f}Jt"
-        elif num >= 1_000:
-            return f"{num / 1_000:.1f}K"
-        else:
-            return f"{num:.0f}"
-    
-    # def sidebar_menu(self):
-    #     with st.sidebar:
-    #         st.image("images.png", caption="Dashboard Analytics")
-    #         menu = st.radio("", ["Home", "Transaksi Harian", "Merchant Registrasi", "Analisis Pajak"])
-    #     return menu
 
     def filter_data(self):
         col1, col2, col3 = st.columns(3)
@@ -72,22 +55,22 @@ class TokoLadangDashboard:
         with col1:
             st.info("Total PO")
             total_po = self.df_filtered["Jumlah PO"].sum()
-            st.metric("", value=self.format_number(total_po))
+            st.metric("", value=format_rupiah(total_po))
         
         with col2:
             st.info("Total Nominal")
             nominal = self.df_filtered["Jumlah Nominal"].sum()
-            st.metric("", value=self.format_number(nominal))
+            st.metric("", value=format_rupiah(nominal))
         
         with col3:
             st.info("Total PPh 22")
             total_pph = self.df_filtered["PPh 22"].sum()
-            st.metric("", value=self.format_number(total_pph))
+            st.metric("", value=format_rupiah(total_pph))
         
         with col4:
             st.info("Total PPN")
             total_ppn = self.df_filtered["PPN"].sum()
-            st.metric("", value=self.format_number(total_ppn))
+            st.metric("", value=format_rupiah(total_ppn))
 
     def show_po_tren(self):
         col1, _, col2 = st.columns([5, 0.001, 1.7])  
@@ -125,8 +108,8 @@ class TokoLadangDashboard:
         total_per_hari_seminggu = self.df_filtered.groupby("Hari").agg({
             "Jumlah PO": "mean",
             "Jumlah Nominal": "mean"}).reindex(["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]).reset_index()
-        total_per_hari_seminggu["Jumlah PO Text"] = total_per_hari_seminggu["Jumlah PO"].apply(self.format_number)
-        total_per_hari_seminggu["Jumlah Nominal Text"] = total_per_hari_seminggu["Jumlah Nominal"].apply(self.format_number)
+        total_per_hari_seminggu["Jumlah PO Text"] = total_per_hari_seminggu["Jumlah PO"].apply(format_rupiah)
+        total_per_hari_seminggu["Jumlah Nominal Text"] = total_per_hari_seminggu["Jumlah Nominal"].apply(format_rupiah)
 
         fig = make_subplots(
             rows=1, cols=2, 
@@ -152,32 +135,6 @@ class TokoLadangDashboard:
         fig.update_layout(showlegend=False, height=380,margin=dict(t=27, b=48) )
         st.subheader("Perbandingan Tren Transaksi per Hari")
         st.plotly_chart(fig, use_container_width=True)
-    
-
-    # def pendapatan_perbulan(self):
-    #     st.subheader("Tren Pendapatan per Bulan")
-
-    #     nominal_bulanan = self.df_filtered.groupby("Bulan")["Jumlah Nominal"].sum().reset_index()
-    #     nominal_bulanan["Bulan"] = nominal_bulanan["Bulan"].astype(str)
-
-    #     fig = go.Figure()
-    #     fig.add_trace(go.Scatter(
-    #         x=nominal_bulanan["Bulan"], 
-    #         y=nominal_bulanan["Jumlah Nominal"], 
-    #         mode="lines+markers",
-    #         marker=dict(
-    #             size=10,
-    #             color=nominal_bulanan["Jumlah Nominal"],  
-    #             colorscale="RdBu",  
-    #             showscale=False
-    #         ), line=dict(width=3, color="#F2B949")))
-
-    #     fig.update_layout(
-    #         xaxis_title="Bulan",
-    #         yaxis_title="Total Nominal",
-    #         margin=dict(t=10, b=30))
-    #     st.plotly_chart(fig, use_container_width=True)
-
 
     def pendapatan_perbulan(self):
         st.subheader("Tren Pendapatan per Bulan")
@@ -215,15 +172,6 @@ class TokoLadangDashboard:
 
 
     def run(self):
-        # st.set_page_config(page_title="Toko Ladang", page_icon=':shopping_trolley:', layout="wide")
-        # col1, col2 = st.columns([8, 1])  
-        # with col1:
-        #     st.title("Dashboard Analisis Data Transaksi")
-        # with col2:
-        #     st.image("images.png", width=90000) 
-
-        # st.title("Dashboard Analisis Data Transaksi Toko Ladang")
-        # st.markdown("<br><br>", unsafe_allow_html=True)  
         self.filter_data()
         self.semua_total()
         self.show_po_tren()
