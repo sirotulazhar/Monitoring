@@ -67,7 +67,7 @@ class MerchantDashboard(BaseDashboard):
         with col4:
             with st.container():
                 chart = alt.Chart(df_grouped).mark_bar(color="#0083B8").encode(
-                    x=alt.X("periode:O", title="Waktu", axis=alt.Axis(labelAngle=0)),
+                    x=alt.X("periode:O", title="Periode", axis=alt.Axis(labelAngle=0)),
                     y=alt.Y("jumlah_merchant:Q", title="Jumlah Merchant"),
                     tooltip=["periode", "jumlah_merchant"]
                 ).properties(width=800, height=400)
