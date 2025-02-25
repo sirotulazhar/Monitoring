@@ -1,8 +1,8 @@
 import streamlit as st
 import altair as alt
 import pandas as pd
-from bs_dashboard import BaseDashboard
-from utils import format_angka
+from dashboard.bs_dashboard import BaseDashboard
+from dashboard.utils import format_angka
 
 class MerchantDashboard(BaseDashboard):
     def filter_data(self):
