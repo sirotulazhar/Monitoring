@@ -1,6 +1,4 @@
 import streamlit as st
-from auth.authentication import authenticate
-from auth.authorization import handler
 from data.data_loader import load_data
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
@@ -10,6 +8,8 @@ from dashboard.harian import Dashboardharian
 from dashboard.laman_1 import TokoLadangDashboard
 import seaborn as sns
 from streamlit_option_menu import option_menu
+from auth.authentication import authenticate
+from auth.authorization import handler
 
 sns.set(style='dark')
 st.set_page_config(page_title='Toko Ladang', page_icon='🛒', layout='wide')
