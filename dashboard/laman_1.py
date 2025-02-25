@@ -12,7 +12,7 @@ class TokoLadangDashboard:
         self.df_filtered = self.df.copy()
     
     def load_data(self):
-        df = pd.read_csv("transaksi harian.csv")
+        df = pd.read_csv("data/transaksi harian.csv")
         df["Tanggal"] = pd.to_datetime(df["Tanggal"])
         df["Bulan"] = df["Tanggal"].dt.to_period("M")
         hari_mapping = {
