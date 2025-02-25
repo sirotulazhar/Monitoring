@@ -3,6 +3,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from dashboard.utils import format_rupiah
 
 class Dashboardharian:
     def __init__(self,df):
@@ -11,7 +12,7 @@ class Dashboardharian:
         self.df_filtered = self.df.copy()
     
     def load_data(self):
-        df = pd.read_csv("cleaned_data.csv")
+        df = pd.read_csv("data/cleaned_data.csv")
         df["waktu"] = pd.to_datetime(df["waktu"])
         df["Bulan"] = df["waktu"].dt.to_period("M")
         hari_mapping = {
@@ -20,18 +21,6 @@ class Dashboardharian:
         }
         df["Hari"] = df["waktu"].dt.day_name().map(hari_mapping)
         return df
-    
-    def format_number(self, num):
-        if num >= 1_000_000_000_000:
-            return f"{num / 1_000_000_000_000:.1f}T"
-        elif num >= 1_000_000_000:
-            return f"{num / 1_000_000_000:.1f}M"
-        elif num >= 1_000_000:
-            return f"{num / 1_000_000:.1f}Jt"
-        elif num >= 1_000:
-            return f"{num / 1_000:.1f}K"
-        else:
-            return f"{num:.0f}"
 
     def filter_data(self):
         # st.text("📆 Filter Rentang Waktu") 
@@ -53,27 +42,27 @@ class Dashboardharian:
         with col1:
             st.info("Total PO")
             total_po = self.df_filtered["jumlah_po"].sum()
-            st.metric("", value=self.format_number(total_po))
+            st.metric("", value=self.format_rupiah(total_po))
         
         with col2:
             st.info("Total Nominal")
             nominal = self.df_filtered["nominal_po"].sum()
-            st.metric("", value=self.format_number(nominal))
+            st.metric("", value=self.format_rupiah(nominal))
         
         with col3:
             st.info("Total PPh 22")
             total_pph = self.df_filtered["pph22"].sum()
-            st.metric("", value=self.format_number(total_pph))
+            st.metric("", value=self.format_rupiah(total_pph))
         
         with col4:
             st.info("Total PPN")
             total_ppn = self.df_filtered["ppn"].sum()
-            st.metric("", value=self.format_number(total_ppn))
+            st.metric("", value=self.format_rupiah(total_ppn))
         
         with col5:
             st.info('Total Pajak') 
             total_pajak = self.df_filtered[["ppn", "pph22"]].sum().sum()
-            st.metric("", value=self.format_number(total_pajak))
+            st.metric("", value=self.format_rupiah(total_pajak))
 
     def show_po_tren(self):
         col1, _, col2 = st.columns([4,0.001, 2])  
@@ -172,16 +161,6 @@ class Dashboardharian:
             st.plotly_chart(fig_pie, use_container_width=True)
 
     def run(self):
-        # st.set_page_config(page_title="Toko Ladang", page_icon=':shopping_trolley:', layout="wide")
-        # st.title("Dashboard Analisis Data Transaksi")
-        # col1, col2 = st.columns([8, 1])  
-        # with col1:
-        #     st.title("Dashboard Analisis Data Transaksi")
-        # with col2:
-        #     st.image("images.png", width=90000) 
-
-        # st.title("Dashboard Analisis Data Transaksi Toko Ladang")
-        # st.markdown("<br><br>", unsafe_allow_html=True)  
         self.filter_data()
         self.semua_total()
         self.show_po_tren()
