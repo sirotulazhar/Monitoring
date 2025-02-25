@@ -1,5 +1,5 @@
 import streamlit as st
-from data_loader import load_data
+from data.data_loader import load_data
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
 from dashboard.payment import PaymentDashboard
