@@ -80,7 +80,7 @@ class Dashboardharian:
                 # Plot data
                 fig = px.bar(po_bulanan, x="jumlah_po", y="kota_kab_sekolah", 
                             labels={"kota_kab_sekolah": "Kota/Kabupaten", "jumlah_po": "Total PO"},
-                            color_discrete_sequence=["#F2B949"], width=600, height=500)
+                            color_discrete_sequence=["#F2B949"], width=600, height=500,text_auto=True)
 
                 fig.update_layout(margin=dict(t=10, b=100))
                 st.plotly_chart(fig, use_container_width=True)
@@ -141,7 +141,7 @@ class Dashboardharian:
             # Plot data
             fig = px.bar(prov_bulanan, x="jumlah_po", y="prov_sekolah", 
                         labels={"prov_sekolah": "Provinsi", "jumlah_po": "Total PO"},
-                        color_discrete_sequence=["#F2B949"], width=600, height=500)
+                        color_discrete_sequence=["#F2B949"], width=600, height=500,text_auto=True)
             fig.update_layout(margin=dict(t=10, b=100))
             st.plotly_chart(fig, use_container_width=True)
 
