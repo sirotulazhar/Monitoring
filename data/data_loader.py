@@ -1,6 +1,6 @@
 import pandas as pd
 
-def load_data(file_path='data/cleaned_data.csv'):
+def load_data(file_path='data/regions and payment methods.csv'):
     df = pd.read_csv(file_path)
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
     df['prov_sekolah'] = df['prov_sekolah'].str.strip().str.title()
