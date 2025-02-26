@@ -6,7 +6,7 @@ from dashboard.utils import format_angka
 
 class MerchantDashboard(BaseDashboard):
     def filter_data(self):
-        df = pd.read_csv('data/cleaned_merchant.csv')
+        df = pd.read_csv('data/merchant registered.csv')
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
         df['provinsi'] = df['provinsi'].str.strip().str.title()
 
