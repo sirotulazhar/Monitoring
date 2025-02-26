@@ -10,7 +10,7 @@ class Dashboardharian:
         self.df_filtered = self.df.copy()
     
     def load_data(self):
-        df = pd.read_csv("data/cleaned_data.csv")
+        df = pd.read_csv("data/regions and payment methods.csv")
         df["waktu"] = pd.to_datetime(df["waktu"])
         df["Bulan"] = df["waktu"].dt.to_period("M")
         hari_mapping = {
