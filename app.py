@@ -1,17 +1,17 @@
 import streamlit as st
 import pandas as pd
-from data_loader import load_data
-from provinsi import ProvinceDashboard
-from kota import CityDashboard
-from payment import PaymentDashboard
-from merchant import MerchantDashboard
-from harian_new import Dashboardharian
-from transaksi_new import TokoLadangDashboard
+from data.data_loader import load_data
+from dashboard.provinsi import ProvinceDashboard
+from dashboard.kota import CityDashboard
+from dashboard.payment import PaymentDashboard
+from dashboard.merchant import MerchantDashboard
+from dashboard.harian import Dashboardharian
+from dashboard.laman_1 import TokoLadangDashboard
+from dashboard.upload import FileUploader
 import seaborn as sns
 from streamlit_option_menu import option_menu
-from authentication import authenticate
-from authorization import handler
-from upload import FileUploader
+from auth.authentication import authenticate
+from auth.authorization import handler
 
 sns.set(style='dark')
 
