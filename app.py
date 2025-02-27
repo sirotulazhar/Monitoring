@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import seaborn as sns
 from data.data_loader import load_data
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
@@ -7,7 +8,7 @@ from dashboard.payment import PaymentDashboard
 from dashboard.merchant import MerchantDashboard
 from dashboard.harian import Dashboardharian
 from dashboard.laman_1 import TokoLadangDashboard
-import seaborn as sns
+from dashboard.upload import FileUploader
 from streamlit_option_menu import option_menu
 from auth.authentication import authenticate
 from auth.authorization import handler
@@ -97,7 +98,8 @@ else:
         "Wilayah Provinsi",  
         "Wilayah Kota / Kabupaten",  
         "Per Metode Pembayaran",  
-        "Pendaftaran Merchant"
+        "Pendaftaran Merchant",
+        "Upload Data"
     ]
 
     all_icons = [
@@ -106,9 +108,10 @@ else:
         "globe", 
         "building",  
         "credit-card",  
-        "shop"
+        "shop",
+        "upload"
     ]
-
+            
     col6, col7 = st.columns([0.24, 0.7])  
 
     filtered_menu_options = [feature for feature in all_menu_options if handler.handle(st.session_state.role, feature)]
@@ -148,3 +151,5 @@ else:
             PaymentDashboard(df).run()
         elif selected == 'Pendaftaran Merchant':
             MerchantDashboard(df).run()
+        elif selected == "Upload Data":
+            FileUploader().run()
