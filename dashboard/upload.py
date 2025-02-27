@@ -3,6 +3,7 @@ from data.data_loader import preprocess_data
 import pandas as pd
 import time
 import os
+import subprocess
 
 DATA_FOLDER = os.path.join(os.path.dirname(__file__), "data")
 os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -50,6 +51,15 @@ class FileUploader:
 
                 # Gabungkan data lama dengan yang baru
                 df_combined = pd.concat([df_existing, df_new], ignore_index=True).drop_duplicates()
+                
+                def push_to_github(file_path, commit_message="Update data"):
+                    try:
+                        subprocess.run(["git", "add", file_path], check=True)
+                        subprocess.run(["git", "commit", "-m", commit_message], check=True)
+                        subprocess.run(["git", "push", "origin", "main"], check=True)
+                        st.success("📂 Data berhasil disimpan dan di-push ke GitHub!")
+                    except Exception as e:
+                        st.error(f"🚨 Gagal push ke GitHub: {e}")                  
 
                 if st.button("💾 Simpan Data"):
                     progress_bar = st.progress(0)
@@ -62,6 +72,7 @@ class FileUploader:
                     df_combined.to_csv(file_path, index=False)
                     
                     progress_bar.empty()
+                    push_to_github(file_path)
                     st.success(f"📂 Data berhasil disimpan di: {file_path}")
             else:
                 st.error("🚨 Struktur kolom tidak sesuai dengan dataset yang tersedia!")
