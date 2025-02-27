@@ -4,9 +4,9 @@ import pandas as pd
 import time
 import os
 
-DATA_FOLDER = r"C:\\Users\\Asus\\Documents\\Submission\\Dashboard"
+DATA_FOLDER = os.path.join(os.path.dirname(__file__), "data")
+os.makedirs(DATA_FOLDER, exist_ok=True)
 
-# Struktur dataset yang diizinkan
 DATASETS = {
     "merchant registered.csv": ["waktu", "provinsi", "kab_kota", "jumlah_merchant"],
     "regions and payment methods.csv": ["waktu", "payment_method", "prov_sekolah", "kota_kab_sekolah", "jumlah_po", "nominal_po", "pph22", "ppn", "total_pajak"],
