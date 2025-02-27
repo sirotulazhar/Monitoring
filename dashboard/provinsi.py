@@ -5,9 +5,7 @@ from dashboard.bs_dashboard import BaseDashboard
 from dashboard.utils import format_rupiah
 
 class ProvinceDashboard(BaseDashboard):
-    def filter_data(self):
-        pass
-
+    
     def show_metrics(self):
         col3, col4 = st.columns([2, 2])
         col1, _, col2 = st.columns([4, 0.12, 1.2])
@@ -111,6 +109,4 @@ class ProvinceDashboard(BaseDashboard):
             st.metric(label='', value=format_rupiah(total_pajak))
 
         st.caption("Dashboard ©️ 2025 by Toko Ladang")
-
-    def show_visualization(self):
-        pass
+        
