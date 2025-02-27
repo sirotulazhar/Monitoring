@@ -6,6 +6,7 @@ from dashboard.utils import format_angka
 
 class MerchantDashboard(BaseDashboard):
     def filter_data(self):
+        df = pd.read_csv('data/merchant registered.csv')
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
         df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
         df['waktu']
