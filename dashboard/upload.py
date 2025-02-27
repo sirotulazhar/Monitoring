@@ -1,5 +1,5 @@
 import streamlit as st
-from data_loader import preprocess_data
+from data.data_loader import preprocess_data
 import pandas as pd
 import time
 import os
