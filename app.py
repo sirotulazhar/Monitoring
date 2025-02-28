@@ -13,6 +13,21 @@ from streamlit_option_menu import option_menu
 from auth.authentication import authenticate
 from auth.authorization import handler
 
+import streamlit as st
+import pandas as pd
+from sqlalchemy import create_engine
+
+# Debugging: cek apakah secrets ada
+st.write("Checking secrets...")
+st.write(st.secrets)
+
+DB_HOST = st.secrets["DB_HOST"]
+DB_PORT = st.secrets["DB_PORT"]
+DB_NAME = st.secrets["DB_NAME"]
+DB_USER = st.secrets["DB_USER"]
+DB_PASSWORD = st.secrets["DB_PASSWORD"]
+
+
 sns.set(style='dark')
 
 if "logged_in" not in st.session_state:
