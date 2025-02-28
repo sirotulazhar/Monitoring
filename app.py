@@ -27,7 +27,20 @@ DB_NAME = st.secrets["DB_NAME"]
 DB_USER = st.secrets["DB_USER"]
 DB_PASSWORD = st.secrets["DB_PASSWORD"]
 
+import psycopg2
 
+try:
+    conn = psycopg2.connect(
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT
+    )
+    st.write("✅ Database connection successful!")
+except Exception as e:
+    st.write("❌ Database connection failed:", e)
+    
 sns.set(style='dark')
 
 if "logged_in" not in st.session_state:
