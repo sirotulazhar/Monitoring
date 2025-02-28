@@ -3,10 +3,29 @@ import altair as alt
 import pandas as pd
 from dashboard.bs_dashboard import BaseDashboard
 from dashboard.utils import format_angka
+from sqlalchemy import create_engine
+import os
+
+DB_HOST = st.secrets["DB_HOST"]
+DB_PORT = st.secrets["DB_PORT"]
+DB_NAME = st.secrets["DB_NAME"]
+DB_USER = st.secrets["DB_USER"]
+DB_PASSWORD = st.secrets["DB_PASSWORD"]
 
 class MerchantDashboard(BaseDashboard):
+    def get_db_connection(self):
+        """Membuat koneksi ke database PostgreSQL"""
+        engine = create_engine(f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+        return engine
+    
     def filter_data(self):
-        df = pd.read_csv('data/merchant registered.csv')
+        """Mengambil data dari PostgreSQL"""
+        engine = self.get_db_connection()
+        query = """
+        SELECT waktu, provinsi, kab_kota, jumlah_merchant
+        FROM merchant_registered
+        """
+        df = pd.read_sql(query, engine)
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
         df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
         df['waktu']
