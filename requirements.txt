@@ -2,6 +2,8 @@ altair==5.5.0
 matplotlib==3.8.3
 pandas==2.2.3
 plotly==6.0.0
+python-dotenv==1.0.1
 seaborn==0.13.2
+SQLAlchemy==2.0.36
 streamlit==1.38.0
 streamlit_option_menu==0.4.0
