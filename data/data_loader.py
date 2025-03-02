@@ -1,27 +1,45 @@
 import pandas as pd
+from sqlalchemy import create_engine
+import psycopg2
 import os
 
-def load_data(file_path='data/regions and payment methods.csv'):
-    df = pd.read_csv(file_path)
+# Mengambil konfigurasi dari secrets
+db_secrets = st.secrets.get("connections", {}).get("postgresql", {})
+
+DB_USER = db_secrets.get("DB_USER", "")
+DB_PASSWORD = db_secrets.get("DB_PASSWORD", "")
+DB_HOST = db_secrets.get("DB_HOST", "")
+DB_PORT = db_secrets.get("DB_PORT", "")
+DB_NAME = db_secrets.get("DB_NAME", "")
+
+def get_db_connection():
+        """Membuat koneksi ke database PostgreSQL"""
+        DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        engine = create_engine(DATABASE_URL)
+        return engine
+
+def load_data():
+    """Mengambil data dari PostgreSQL"""
+    engine = get_db_connection()
+    query = """
+    SELECT waktu, payment_method, prov_sekolah, kota_kab_sekolah, jumlah_po, nominal_po, pph22, ppn, total_pajak
+    FROM regions_and_payment_methods;
+    """
+    df = pd.read_sql(query, engine)
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
     df['prov_sekolah'] = df['prov_sekolah'].str.strip().str.title()
     df['kota_kab_sekolah'] = df['kota_kab_sekolah'].str.strip().str.title()
     df['payment_method'] = df['payment_method'].str.strip().str.lower()
     return df
 
-DATA_FOLDER = os.path.join(os.path.dirname(__file__), "data")
-
-os.makedirs(DATA_FOLDER, exist_ok=True)
-
-# Struktur dataset yang diizinkan
 DATASETS = {
     "merchant registered.csv": ["waktu", "provinsi", "kab_kota", "jumlah_merchant"],
     "regions and payment methods.csv": ["waktu", "payment_method", "prov_sekolah", "kota_kab_sekolah", "jumlah_po", "nominal_po", "pph22", "ppn", "total_pajak"],
-    "Harian.csv": ["Bulan", "Tanggal", "Jumlah PO", "Jumlah Nominal", "PPh 22", "PPN", "Jumlah Pajak"]
 }
 
 def preprocess_data(df, file_type):
-    
+    """Fungsi untuk melakukan preprocessing berdasarkan jenis file."""
+
     if file_type == "regions_payment":
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce').dt.strftime('%m/%d/%Y')
         df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
@@ -37,27 +55,23 @@ def preprocess_data(df, file_type):
         df['pph22'] = pd.to_numeric(df['pph22'], errors='coerce')
         if "total_pajak" not in df.columns:
             df["total_pajak"] = df["pph22"] + df["ppn"]
-    
+
     elif file_type == "merchant_registered":
-        df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce').dt.date
+        df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce').dt.strftime('%m/%d/%Y') 
         df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
         df['waktu']
         df['provinsi'] = df['provinsi'].str.strip().str.title()
         df['kab_kota'] = df['kab_kota'].str.strip().str.title()
     
-    elif file_type == "harian":
-        df['Bulan'] = df['Bulan'].str.strip().str.title()
-
-        df['Tanggal'] = pd.to_datetime(df['Tanggal'], errors='coerce').dt.strftime('%m/%d/%Y')
-        df = df.sort_values(by='Tanggal', ascending=True).reset_index(drop=True)
-
-        df['Jumlah Nominal'] = df['Jumlah Nominal'].astype(str).str.replace(',', '.', regex=True)
-        df['Jumlah Nominal'] = pd.to_numeric(df['Jumlah Nominal'], errors='coerce')
-        df['PPN'] = df['PPN'].astype(str).str.replace(',', '.', regex=True)
-        df['PPN'] = pd.to_numeric(df['PPN'], errors='coerce')
-        df['PPh 22'] = df['PPh 22'].astype(str).str.replace(',', '.', regex=True)
-        df['PPh 22'] = pd.to_numeric(df['PPh 22'], errors='coerce')
-    
     df.fillna(method='ffill', inplace=True)
     
     return df
+
+def save_to_postgres(df, table_name):
+    """Menyimpan data ke PostgreSQL."""
+    engine = get_db_connection()
+    
+    with engine.connect() as conn:
+        df.to_sql(table_name, con=conn, index=False, if_exists="append")
+    
+    return f"✅ Data berhasil dimasukkan ke tabel '{table_name}'"
