@@ -7,34 +7,31 @@ from sqlalchemy import create_engine
 import psycopg2
 import os
 
-conn = st.connection("postgresql", type="sql",
-                     username=st.secrets["connections.postgresql"]["DB_USER"],  # Sesuai dengan secrets
-                     password=st.secrets["connections.postgresql"]["DB_PASSWORD"],
-                     host=st.secrets["connections.postgresql"]["DB_HOST"],
-                     port=st.secrets["connections.postgresql"]["DB_PORT"],
-                     database=st.secrets["connections.postgresql"]["DB_NAME"])
+# Mengambil konfigurasi dari secrets
+db_secrets = st.secrets.get("connections", {}).get("postgresql", {})
 
-try:
-    st.write("📌 **Menampilkan st.secrets:**")
-    st.write(st.secrets)
-except Exception as e:
-    st.error(f"🚨 Error membaca secrets: {e}")
+DB_USER = db_secrets.get("DB_USER", "")
+DB_PASSWORD = db_secrets.get("DB_PASSWORD", "")
+DB_HOST = db_secrets.get("DB_HOST", "")
+DB_PORT = db_secrets.get("DB_PORT", "")
+DB_NAME = db_secrets.get("DB_NAME", "")
 
 
 class MerchantDashboard(BaseDashboard):
     def get_db_connection(self):
         """Membuat koneksi ke database PostgreSQL"""
-        engine = create_engine(f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+        DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        engine = create_engine(DATABASE_URL)
         return engine
         
-    # Query data dengan caching
-    @st.cache_data(ttl="10m")
-    def load_data():
-        query = "SELECT waktu, provinsi, kab_kota, jumlah_merchant FROM merchant_registered"
-        return conn.query(query, ttl="10m")
-        
     def filter_data(self):
-        df = load_data()
+        engine = self.get_db_connection()
+
+        query = """
+        SELECT waktu, provinsi, kab_kota, jumlah_merchant
+        FROM merchant_registered
+        """
+        df = pd.read_sql(query, engine)
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
         df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
         df['waktu']
