@@ -14,7 +14,12 @@ conn = st.connection("postgresql", type="sql",
                      port=st.secrets["connections.postgresql"]["DB_PORT"],
                      database=st.secrets["connections.postgresql"]["DB_NAME"])
 
-st.write(st.secrets)
+try:
+    st.write("📌 **Menampilkan st.secrets:**")
+    st.write(st.secrets)
+except Exception as e:
+    st.error(f"🚨 Error membaca secrets: {e}")
+
 
 class MerchantDashboard(BaseDashboard):
     def get_db_connection(self):
