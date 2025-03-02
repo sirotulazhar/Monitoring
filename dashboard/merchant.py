@@ -8,7 +8,7 @@ import psycopg2
 import os
 
 conn = st.connection("postgresql", type="sql",
-                     username=st.secrets["DB_USER"],
+                     username=st.secrets["DB_USERNAME"],
                      password=st.secrets["DB_PASSWORD"],
                      host=st.secrets["DB_HOST"],
                      port=st.secrets["DB_PORT"],
