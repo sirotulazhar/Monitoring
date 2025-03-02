@@ -14,6 +14,8 @@ conn = st.connection("postgresql", type="sql",
                      port=st.secrets["connections.postgresql"]["DB_PORT"],
                      database=st.secrets["connections.postgresql"]["DB_NAME"])
 
+st.write(st.secrets)
+
 class MerchantDashboard(BaseDashboard):
     def get_db_connection(self):
         """Membuat koneksi ke database PostgreSQL"""
