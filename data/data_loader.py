@@ -16,6 +16,14 @@ DB_NAME = db_secrets.get("DB_NAME", "")
 def get_db_connection():
         """Membuat koneksi ke database PostgreSQL"""
         DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        try:
+            engine = create_engine( DATABASE_URL)
+            conn = engine.connect()
+            print("Koneksi berhasil!")
+            conn.close()
+        except Exception as e:
+            print(f"Error koneksi: {e}")
+                
         engine = create_engine(DATABASE_URL)
         return engine
 
