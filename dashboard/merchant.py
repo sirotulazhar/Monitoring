@@ -8,11 +8,11 @@ import psycopg2
 import os
 
 conn = st.connection("postgresql", type="sql",
-                     username=st.secrets["DB_USERNAME"],
-                     password=st.secrets["DB_PASSWORD"],
-                     host=st.secrets["DB_HOST"],
-                     port=st.secrets["DB_PORT"],
-                     database=st.secrets["DB_NAME"])
+                     username=st.secrets["connections.postgresql"]["DB_USER"],  # Sesuai dengan secrets
+                     password=st.secrets["connections.postgresql"]["DB_PASSWORD"],
+                     host=st.secrets["connections.postgresql"]["DB_HOST"],
+                     port=st.secrets["connections.postgresql"]["DB_PORT"],
+                     database=st.secrets["connections.postgresql"]["DB_NAME"])
 
 class MerchantDashboard(BaseDashboard):
     def get_db_connection(self):
