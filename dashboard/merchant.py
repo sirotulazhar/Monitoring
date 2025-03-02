@@ -4,6 +4,7 @@ import pandas as pd
 from dashboard.bs_dashboard import BaseDashboard
 from dashboard.utils import format_angka
 from sqlalchemy import create_engine
+import psycopg2
 import os
 
 DB_HOST = st.secrets["DB_HOST"]
