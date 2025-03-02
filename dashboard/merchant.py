@@ -7,26 +7,27 @@ from sqlalchemy import create_engine
 import psycopg2
 import os
 
-DB_HOST = st.secrets["DB_HOST"]
-DB_PORT = st.secrets["DB_PORT"]
-DB_NAME = st.secrets["DB_NAME"]
-DB_USER = st.secrets["DB_USER"]
-DB_PASSWORD = st.secrets["DB_PASSWORD"]
+conn = st.connection("postgresql", type="sql",
+                     username=st.secrets["DB_USER"],
+                     password=st.secrets["DB_PASSWORD"],
+                     host=st.secrets["DB_HOST"],
+                     port=st.secrets["DB_PORT"],
+                     database=st.secrets["DB_NAME"])
 
 class MerchantDashboard(BaseDashboard):
     def get_db_connection(self):
         """Membuat koneksi ke database PostgreSQL"""
         engine = create_engine(f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
         return engine
-    
+        
+    # Query data dengan caching
+    @st.cache_data(ttl="10m")
+    def load_data():
+        query = "SELECT waktu, provinsi, kab_kota, jumlah_merchant FROM merchant_registered"
+        return conn.query(query, ttl="10m")
+        
     def filter_data(self):
-        """Mengambil data dari PostgreSQL"""
-        engine = self.get_db_connection()
-        query = """
-        SELECT waktu, provinsi, kab_kota, jumlah_merchant
-        FROM merchant_registered
-        """
-        df = pd.read_sql(query, engine)
+        df = load_data()
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
         df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
         df['waktu']
