@@ -25,6 +25,7 @@ def load_merchant():
     df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
     df['provinsi'] = df['provinsi'].str.strip().str.title()
     df['kab_kota'] = df['kab_kota'].str.strip().str.title()
+    df["jumlah_merchant"] = df["jumlah_merchant"].astype(float)
     return df
 
 def load_users():
