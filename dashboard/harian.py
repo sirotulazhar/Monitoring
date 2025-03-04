@@ -2,29 +2,24 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 from dashboard.utils import format_rupiah
+from data.data_loader import load_harian
 
 class Dashboardharian:
     def __init__(self,df):
         self.df= df
-        self.df = self.load_data()
+        self.df = load_harian()
         self.df_filtered = self.df.copy()
-    
-    def load_data(self):
-        df = pd.read_csv("data/regions and payment methods.csv")
-        df["waktu"] = pd.to_datetime(df["waktu"])
-        df["Bulan"] = df["waktu"].dt.to_period("M")
-        hari_mapping = {
-            "Monday": "Senin", "Tuesday": "Selasa", "Wednesday": "Rabu",
-            "Thursday": "Kamis", "Friday": "Jumat", "Saturday": "Sabtu", "Sunday": "Minggu"
-        }
-        df["Hari"] = df["waktu"].dt.day_name().map(hari_mapping)
-        return df
 
     def filter_data(self):
         # st.subheader("📆 Filter Rentang Waktu")  
         st.markdown("<br>",unsafe_allow_html=True)
         st.markdown("<style>div[data-testid='stDateInput'] {margin-top: -50px;}</style>", unsafe_allow_html=True)
-        date_pilih = st.date_input("📆 Filter Rentang Waktu", value=self.df["waktu"].min().date())
+        date_pilih = st.date_input(
+            "📆 Filter Rentang Waktu",
+            value=self.df["waktu"].min().date(),
+            min_value=self.df["waktu"].min().date(),
+            max_value=self.df["waktu"].max().date()
+        )
         self.df_filtered = self.df[self.df["waktu"].dt.date == date_pilih]
 
     
