@@ -3,49 +3,11 @@ import altair as alt
 import pandas as pd
 from dashboard.bs_dashboard import BaseDashboard
 from dashboard.utils import format_angka
-from sqlalchemy import create_engine
-import psycopg2
-import os
-
-# Mengambil konfigurasi dari secrets
-db_secrets = st.secrets.get("connections", {}).get("postgresql", {})
-
-DB_USER = db_secrets.get("DB_USER", "")
-DB_PASSWORD = db_secrets.get("DB_PASSWORD", "")
-DB_HOST = db_secrets.get("DB_HOST", "")
-DB_PORT = db_secrets.get("DB_PORT", "")
-DB_NAME = db_secrets.get("DB_NAME", "")
-
+from data.data_loader import load_merchant
 
 class MerchantDashboard(BaseDashboard):
-    def get_db_connection(self):
-        """Membuat koneksi ke database PostgreSQL"""
-        DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-        engine = create_engine(DATABASE_URL)
-        return engine
-        
-    def filter_data(self):
-        engine = self.get_db_connection()
-
-        query = """
-        SELECT waktu, provinsi, kab_kota, jumlah_merchant
-        FROM merchant_registered
-        """
-        df = pd.read_sql(query, engine)
-        df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
-        df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
-        df['waktu']
-        df['provinsi'] = df['provinsi'].str.strip().str.title()
-        df['kab_kota'] = df['kab_kota'].str.strip().str.title()
-
-        return df
-    
     def show_metrics(self):
-        self.df = self.filter_data()
-
-        if self.df is None or self.df.empty:
-            st.warning("Data tidak tersedia atau kosong.")
-            return
+        self.df = load_merchant()
         
         col1, col2, col3 = st.columns([2, 2, 2])
         with col1:
