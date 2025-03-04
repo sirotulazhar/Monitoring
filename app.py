@@ -1,6 +1,5 @@
 import streamlit as st
-import pandas as pd
-from data.data_loader import load_data
+from data.data_loader import load_regions_data
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
 from dashboard.payment import PaymentDashboard
@@ -12,7 +11,7 @@ import seaborn as sns
 from streamlit_option_menu import option_menu
 from auth.authentication import authenticate
 from auth.authorization import handler
-    
+
 sns.set(style='dark')
 
 if "logged_in" not in st.session_state:
@@ -79,7 +78,7 @@ else:
         unsafe_allow_html=True
     )
 
-    df = load_data()
+    df = load_regions_data()
 
     all_menu_options = [
         "Dashboard", 
