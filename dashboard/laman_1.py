@@ -4,23 +4,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from dashboard.utils import format_rupiah
+from data.data_loader import load_transaksi
 
 class TokoLadangDashboard:
     def __init__(self,df):
         self.df=df
-        self.df = self.load_data()
+        self.df = load_transaksi()
         self.df_filtered = self.df.copy()
-    
-    def load_data(self):
-        df = pd.read_csv("data/Harian.csv")
-        df["Tanggal"] = pd.to_datetime(df["Tanggal"])
-        df["Bulan"] = df["Tanggal"].dt.to_period("M")
-        hari_mapping = {
-            "Monday": "Senin", "Tuesday": "Selasa", "Wednesday": "Rabu",
-            "Thursday": "Kamis", "Friday": "Jumat", "Saturday": "Sabtu", "Sunday": "Minggu"
-        }
-        df["Hari"] = df["Tanggal"].dt.day_name().map(hari_mapping)
-        return df
 
     def filter_data(self):
         # st.subheader("📆 Filter Rentang Waktu")
