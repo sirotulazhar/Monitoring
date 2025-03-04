@@ -1,49 +1,78 @@
-import streamlit as st
 import pandas as pd
-from sqlalchemy import create_engine
-import psycopg2
-import os
+import streamlit as st
+from streamlit_gsheets import GSheetsConnection
+import pandas as pd
 
-# Mengambil konfigurasi dari secrets
-db_secrets = st.secrets.get("connections", {}).get("postgresql", {})
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-DB_USER = db_secrets.get("DB_USER", "")
-DB_PASSWORD = db_secrets.get("DB_PASSWORD", "")
-DB_HOST = db_secrets.get("DB_HOST", "")
-DB_PORT = db_secrets.get("DB_PORT", "")
-DB_NAME = db_secrets.get("DB_NAME", "")
+def load_data(sheet_name):
+    """Mengambil data dari Google Sheets berdasarkan nama sheet."""
+    df = conn.read(worksheet=sheet_name)
+    return df
 
-def get_db_connection():
-        """Membuat koneksi ke database PostgreSQL"""
-        DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-        try:
-            engine = create_engine( DATABASE_URL)
-            conn = engine.connect()
-            print("Koneksi berhasil!")
-            conn.close()
-        except Exception as e:
-            print(f"Error koneksi: {e}")
-                
-        engine = create_engine(DATABASE_URL)
-        return engine
-
-def load_data():
-    """Mengambil data dari PostgreSQL"""
-    engine = get_db_connection()
-    query = """
-    SELECT waktu, payment_method, prov_sekolah, kota_kab_sekolah, jumlah_po, nominal_po, pph22, ppn, total_pajak
-    FROM regions_and_payment_methods;
-    """
-    df = pd.read_sql(query, engine)
+def load_regions_data():
+    df = load_data("regions and payment methods")
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
     df['prov_sekolah'] = df['prov_sekolah'].str.strip().str.title()
     df['kota_kab_sekolah'] = df['kota_kab_sekolah'].str.strip().str.title()
     df['payment_method'] = df['payment_method'].str.strip().str.lower()
+    
     return df
 
+def load_merchant():
+    df = load_data("merchant registered")
+    df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
+    df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
+    df['provinsi'] = df['provinsi'].str.strip().str.title()
+    df['kab_kota'] = df['kab_kota'].str.strip().str.title()
+    return df
+
+def load_users():
+    """Mengambil data username, password, dan role dari sheet 'login'."""
+    df = load_data("login")
+    return df
+
+def load_transaksi():
+    df = load_data("Harian")
+
+    def parse_mixed_date(date_str):
+        try:
+            # Coba parsing sebagai format DD/MM/YYYY
+            return pd.to_datetime(date_str, format="%d/%m/%Y")
+        except ValueError:
+            try:
+                # Jika gagal, coba parsing sebagai format YYYY-MM-DD
+                return pd.to_datetime(date_str, format="%Y-%m-%d")
+            except ValueError:
+                return pd.NaT  # Jika masih gagal, set sebagai NaT
+
+    # Terapkan fungsi parsing ke kolom "Tanggal"
+    df["Tanggal"] = df["Tanggal"].astype(str).apply(parse_mixed_date)
+
+    df["Bulan"] = df["Tanggal"].dt.to_period("M")
+    hari_mapping = {
+        "Monday": "Senin", "Tuesday": "Selasa", "Wednesday": "Rabu",
+        "Thursday": "Kamis", "Friday": "Jumat", "Saturday": "Sabtu", "Sunday": "Minggu"
+    }
+    df["Hari"] = df["Tanggal"].dt.day_name().map(hari_mapping)
+    return df
+
+def load_harian():
+    df = load_data("regions and payment methods")
+    df["waktu"] = pd.to_datetime(df["waktu"])
+    df["Bulan"] = df["waktu"].dt.to_period("M")
+    hari_mapping = {
+        "Monday": "Senin", "Tuesday": "Selasa", "Wednesday": "Rabu",
+        "Thursday": "Kamis", "Friday": "Jumat", "Saturday": "Sabtu", "Sunday": "Minggu"
+    }
+    df["Hari"] = df["waktu"].dt.day_name().map(hari_mapping)
+    return df
+
+# Struktur dataset yang diizinkan
 DATASETS = {
     "merchant registered.csv": ["waktu", "provinsi", "kab_kota", "jumlah_merchant"],
     "regions and payment methods.csv": ["waktu", "payment_method", "prov_sekolah", "kota_kab_sekolah", "jumlah_po", "nominal_po", "pph22", "ppn", "total_pajak"],
+    "Harian.csv": ["Bulan", "Tanggal", "Jumlah PO", "Jumlah Nominal", "PPh 22", "PPN", "Jumlah Pajak"]
 }
 
 def preprocess_data(df, file_type):
@@ -64,23 +93,26 @@ def preprocess_data(df, file_type):
         df['pph22'] = pd.to_numeric(df['pph22'], errors='coerce')
         if "total_pajak" not in df.columns:
             df["total_pajak"] = df["pph22"] + df["ppn"]
-
+    # .dt.date
     elif file_type == "merchant_registered":
-        df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce').dt.strftime('%m/%d/%Y') 
+        df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
         df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
-        df['waktu']
         df['provinsi'] = df['provinsi'].str.strip().str.title()
         df['kab_kota'] = df['kab_kota'].str.strip().str.title()
+    
+    elif file_type == "harian":
+        df['Bulan'] = df['Bulan'].str.strip().str.title()
+
+        df['Tanggal'] = pd.to_datetime(df['Tanggal'], errors='coerce').dt.strftime('%m/%d/%Y')
+        df = df.sort_values(by='Tanggal', ascending=True).reset_index(drop=True)
+
+        df['Jumlah Nominal'] = df['Jumlah Nominal'].astype(str).str.replace(',', '.', regex=True)
+        df['Jumlah Nominal'] = pd.to_numeric(df['Jumlah Nominal'], errors='coerce')
+        df['PPN'] = df['PPN'].astype(str).str.replace(',', '.', regex=True)
+        df['PPN'] = pd.to_numeric(df['PPN'], errors='coerce')
+        df['PPh 22'] = df['PPh 22'].astype(str).str.replace(',', '.', regex=True)
+        df['PPh 22'] = pd.to_numeric(df['PPh 22'], errors='coerce')
     
     df.fillna(method='ffill', inplace=True)
     
     return df
-
-def save_to_postgres(df, table_name):
-    """Menyimpan data ke PostgreSQL."""
-    engine = get_db_connection()
-    
-    with engine.connect() as conn:
-        df.to_sql(table_name, con=conn, index=False, if_exists="append")
-    
-    return f"✅ Data berhasil dimasukkan ke tabel '{table_name}'"
