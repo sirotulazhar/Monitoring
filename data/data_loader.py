@@ -2,12 +2,15 @@ import pandas as pd
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
+import time
 
 conn = st.connection("gsheets", type=GSheetsConnection)
+
 
 def load_data(sheet_name):
     """Mengambil data dari Google Sheets berdasarkan nama sheet."""
     df = conn.read(worksheet=sheet_name)
+
     return df
 
 def load_regions_data():
@@ -22,9 +25,10 @@ def load_regions_data():
 def load_merchant():
     df = load_data("merchant registered")
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
-    df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
     df['provinsi'] = df['provinsi'].str.strip().str.title()
     df['kab_kota'] = df['kab_kota'].str.strip().str.title()
+    if "jumlah_merchant" in df.columns:
+        df["jumlah_merchant"] = pd.to_numeric(df["jumlah_merchant"], errors="coerce").fillna(0).astype(int)
     return df
 
 def load_users():
@@ -80,25 +84,33 @@ def preprocess_data(df, file_type):
 
     if file_type == "regions_payment":
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce').dt.strftime('%m/%d/%Y')
-        df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
-        df['waktu']
+        df['waktu'].fillna(df['waktu'].fillna(method='ffill'), inplace=True)
         df['prov_sekolah'] = df['prov_sekolah'].str.strip().str.title()
+        df['prov_sekolah'].fillna(df['prov_sekolah'].mode()[0], inplace=True)
         df['kota_kab_sekolah'] = df['kota_kab_sekolah'].str.strip().str.title()
-        df['payment_method'] = df['payment_method'].str.strip().str.lower()
+        df['kota_kab_sekolah'].fillna(df['kota_kab_sekolah'].mode()[0], inplace=True)
+        df['payment_method'] = df['payment_method'].str.strip()
+        df['payment_method'].fillna(df['payment_method'].mode()[0], inplace=True)
         df['nominal_po'] = df['nominal_po'].astype(str).str.replace(',', '.', regex=True)
         df['nominal_po'] = pd.to_numeric(df['nominal_po'], errors='coerce')
+        df['nominal_po'].fillna(df['nominal_po'].median(), inplace=True)
         df['ppn'] = df['ppn'].astype(str).str.replace(',', '.', regex=True)
         df['ppn'] = pd.to_numeric(df['ppn'], errors='coerce')
+        df['ppn'].fillna(df['ppn'].median(), inplace=True)
         df['pph22'] = df['pph22'].astype(str).str.replace(',', '.', regex=True)
         df['pph22'] = pd.to_numeric(df['pph22'], errors='coerce')
+        df['pph22'].fillna(df['pph22'].median(), inplace=True)
+        df["jumlah_po"] = pd.to_numeric(df["jumlah_po"], errors="coerce").fillna(0).astype(int)
+        df['jumlah_po'].fillna(df['jumlah_po'].median(), inplace=True)
         if "total_pajak" not in df.columns:
             df["total_pajak"] = df["pph22"] + df["ppn"]
+
     # .dt.date
     elif file_type == "merchant_registered":
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
-        df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
         df['provinsi'] = df['provinsi'].str.strip().str.title()
         df['kab_kota'] = df['kab_kota'].str.strip().str.title()
+        df["jumlah_merchant"] = pd.to_numeric(df["jumlah_merchant"], errors="coerce").fillna(0).astype(int)
     
     elif file_type == "harian":
         df['Bulan'] = df['Bulan'].str.strip().str.title()
