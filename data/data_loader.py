@@ -22,7 +22,7 @@ def load_regions_data():
 def load_merchant():
     df = load_data("merchant registered")
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
-    df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
+    # df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
     df['provinsi'] = df['provinsi'].str.strip().str.title()
     df['kab_kota'] = df['kab_kota'].str.strip().str.title()
     df["jumlah_merchant"] = df["jumlah_merchant"].astype(float)
