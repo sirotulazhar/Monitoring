@@ -1,5 +1,5 @@
 import streamlit as st
-from data.data_loader import load_regions_data
+from data.data_loader import load_regions_data,load_merchant
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
 from dashboard.payment import PaymentDashboard
@@ -138,6 +138,8 @@ else:
         elif selected == 'Per Metode Pembayaran':
             PaymentDashboard(df).run()
         elif selected == 'Pendaftaran Merchant':
-            MerchantDashboard(df).run()
+            df_merchant = load_merchant()
+            MerchantDashboard(df_merchant).run()
+
         elif selected == "Upload Data":
             FileUploader().run()
