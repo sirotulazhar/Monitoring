@@ -117,9 +117,6 @@ class FileUploader:
                             self.save_data(df_new, sheet_name)
 
                         st.session_state["data_uploaded"] = True
-            
                         st.rerun()
-                    else:
-                        st.warning("⚠️ Data sudah diunggah sebelumnya!")
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
