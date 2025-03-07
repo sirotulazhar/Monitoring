@@ -118,7 +118,7 @@ class FileUploader:
                             self.save_data(df_new, sheet_name)
 
                         st.session_state["data_uploaded"] = True
-                        time.sleep(3)
+                        time.sleep(10)
 
                         st.rerun()
             else:
