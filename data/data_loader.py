@@ -22,6 +22,7 @@ def load_regions_data():
     
     return df
 
+
 def load_merchant():
     df = load_data("merchant registered")
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
@@ -59,6 +60,7 @@ def load_transaksi():
         "Thursday": "Kamis", "Friday": "Jumat", "Saturday": "Sabtu", "Sunday": "Minggu"
     }
     df["Hari"] = df["Tanggal"].dt.day_name().map(hari_mapping)
+    
     return df
 
 def load_harian():
@@ -105,7 +107,6 @@ def preprocess_data(df, file_type):
         if "total_pajak" not in df.columns:
             df["total_pajak"] = df["pph22"] + df["ppn"]
 
-    # .dt.date
     elif file_type == "merchant_registered":
         df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
         df['provinsi'] = df['provinsi'].str.strip().str.title()
@@ -115,16 +116,9 @@ def preprocess_data(df, file_type):
     elif file_type == "harian":
         df['Bulan'] = df['Bulan'].str.strip().str.title()
 
-        df['Tanggal'] = pd.to_datetime(df['Tanggal'], errors='coerce').dt.strftime('%m/%d/%Y')
+        df['Tanggal'] = pd.to_datetime(df['Tanggal'], format="%Y-%m-%d", errors='coerce')
         df = df.sort_values(by='Tanggal', ascending=True).reset_index(drop=True)
 
-        df['Jumlah Nominal'] = df['Jumlah Nominal'].astype(str).str.replace(',', '.', regex=True)
-        df['Jumlah Nominal'] = pd.to_numeric(df['Jumlah Nominal'], errors='coerce')
-        df['PPN'] = df['PPN'].astype(str).str.replace(',', '.', regex=True)
-        df['PPN'] = pd.to_numeric(df['PPN'], errors='coerce')
-        df['PPh 22'] = df['PPh 22'].astype(str).str.replace(',', '.', regex=True)
-        df['PPh 22'] = pd.to_numeric(df['PPh 22'], errors='coerce')
-    
     df.fillna(method='ffill', inplace=True)
     
     return df
