@@ -65,7 +65,7 @@ class FileUploader:
 
             # Simpan ke Google Sheets
             conn.update(worksheet=sheet_name, data=df_combined)
-            st.success(f"✅ Data berhasil disimpan di '{sheet_name}'")
+            st.success(f"✅ Data berhasil disimpan !")
 
         except Exception as e:
             st.error(f"🚨 Gagal memperbarui Google Sheets: {e}")
