@@ -3,10 +3,13 @@ import altair as alt
 import pandas as pd
 from dashboard.bs_dashboard import BaseDashboard
 from dashboard.utils import format_rupiah
+from data.data_loader import load_regions_data
 
 class ProvinceDashboard(BaseDashboard):
     
     def show_metrics(self):
+        self.df = load_regions_data()
+        
         col3, col4 = st.columns([2, 2])
         col1, _, col2 = st.columns([4, 0.12, 1.2])
         
@@ -109,4 +112,3 @@ class ProvinceDashboard(BaseDashboard):
             st.metric(label='', value=format_rupiah(total_pajak))
 
         st.caption("Dashboard ©️ 2025 by Toko Ladang")
-        
