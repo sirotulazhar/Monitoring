@@ -200,8 +200,15 @@ class TokoLadangDashboard:
 
         with kol2:
             st.subheader(f"Rasio Pajak per {self.filter_option}")
+            
+            # Konversi tipe data ke numerik untuk menghindari error
+            self.df_filtered["Jumlah Pajak"] = pd.to_numeric(self.df_filtered["Jumlah Pajak"], errors="coerce").fillna(0)
+            self.df_filtered["Jumlah Nominal"] = pd.to_numeric(self.df_filtered["Jumlah Nominal"], errors="coerce").fillna(1)
+
+            # Hitung Rasio Pajak (%) setelah memastikan data bertipe numerik
             self.df_filtered["Rasio Pajak (%)"] = (self.df_filtered["Jumlah Pajak"] / self.df_filtered["Jumlah Nominal"]) * 100
 
+            # Grup berdasarkan filter yang dipilih
             if self.filter_option == "Harian":
                 rasio_pajak = self.df_filtered.groupby("Tanggal")["Rasio Pajak (%)"].mean().reset_index()
                 x_label = "Tanggal"
@@ -212,14 +219,20 @@ class TokoLadangDashboard:
                 rasio_pajak = self.df_filtered.groupby("Bulan")["Rasio Pajak (%)"].mean().reset_index()
                 x_label = "Bulan"
 
+            # Pastikan label x bertipe string
             rasio_pajak[x_label] = rasio_pajak[x_label].astype(str)
 
+            # Buat grafik dengan Plotly
             fig = px.line(
                 rasio_pajak, x=x_label, y="Rasio Pajak (%)",
                 labels={x_label: x_label, "Rasio Pajak (%)": "Rata-rata Rasio Pajak (%)"},
-                color_discrete_sequence=['#F2B949'],markers=True)
+                color_discrete_sequence=['#F2B949'], markers=True
+            )
             fig.update_layout(margin=dict(t=5, b=20)) 
+
+            # Tampilkan grafik di Streamlit
             st.plotly_chart(fig, use_container_width=True)
+
 
 
     def run(self):
