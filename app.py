@@ -1,5 +1,5 @@
 import streamlit as st
-from data.data_loader import load_regions_data,load_merchant
+from data.data_loader import load_regions_data,load_merchant,load_transaksi,load_harian
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
 from dashboard.payment import PaymentDashboard
@@ -78,8 +78,6 @@ else:
         unsafe_allow_html=True
     )
 
-    df = load_regions_data()
-
     all_menu_options = [
         "Dashboard", 
         "Detail Harian Transaksi",  
@@ -128,18 +126,23 @@ else:
 
     with col7:
         if selected == 'Dashboard':
-            TokoLadangDashboard(df).run()
+            st.cache_data.clear()
+            TokoLadangDashboard(load_transaksi()).run()
         elif selected == 'Detail Harian Transaksi':
-            Dashboardharian(df).run()
+            st.cache_data.clear()
+            Dashboardharian(load_harian()).run()
         elif selected == 'Wilayah Provinsi':
-            ProvinceDashboard(df).run()
+            st.cache_data.clear()
+            ProvinceDashboard(load_regions_data()).run()
         elif selected == 'Wilayah Kota / Kabupaten':
-            CityDashboard(df).run()
+            st.cache_data.clear()
+            CityDashboard(load_regions_data()).run()
         elif selected == 'Per Metode Pembayaran':
-            PaymentDashboard(df).run()
+            st.cache_data.clear()
+            PaymentDashboard(load_regions_data()).run()
         elif selected == 'Pendaftaran Merchant':
-            df_merchant = load_merchant()
-            MerchantDashboard(df_merchant).run()
+            st.cache_data.clear()
+            MerchantDashboard(load_merchant()).run()
 
         elif selected == "Upload Data":
             FileUploader().run()
