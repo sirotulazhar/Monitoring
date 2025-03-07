@@ -2,6 +2,7 @@ from data.data_loader import preprocess_data
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import streamlit as st
+import time
 
 # Buat koneksi ke Google Sheets
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -117,6 +118,8 @@ class FileUploader:
                             self.save_data(df_new, sheet_name)
 
                         st.session_state["data_uploaded"] = True
+                        time.sleep(3)
+
                         st.rerun()
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
