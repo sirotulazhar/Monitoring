@@ -60,12 +60,22 @@ class FileUploader:
 
             # Hapus duplikat dengan mempertahankan data terbaru
             unique_cols = [col for col in df.columns if col in existing_data.columns]
-            df_combined = pd.concat([existing_data, df], ignore_index=True)
-            df_combined = df_combined.drop_duplicates(subset=unique_cols, keep="last").reset_index(drop=True)
 
-            # Simpan ke Google Sheets
-            conn.update(worksheet=sheet_name, data=df_combined)
-            st.success(f"✅ Data berhasil disimpan !")
+            if not existing_data.empty:
+            # Cek apakah data baru sudah ada di data lama berdasarkan kolom unik
+                new_data = df[~df.set_index(unique_cols).index.isin(existing_data.set_index(unique_cols).index)]
+            else:
+                new_data = df  # Jika data lama kosong, simpan semua data baru
+
+            if not new_data.empty:
+                # Gabungkan data lama dengan data baru
+                df_combined = pd.concat([existing_data, new_data], ignore_index=True)
+
+                # Simpan ke Google Sheets
+                conn.update(worksheet=sheet_name, data=df_combined)
+
+            else:
+                st.warning("⚠️ Data sudah ada!")
 
         except Exception as e:
             st.error(f"🚨 Gagal memperbarui Google Sheets: {e}")
@@ -108,7 +118,6 @@ class FileUploader:
 
                 unique_cols = [col for col in expected_columns if col in df_new.columns]
                 df_new.drop_duplicates(subset=unique_cols, inplace=True)
-     
                 if st.button("📤 Simpan Data"):
                     if "data_uploaded" not in st.session_state:
                         st.session_state["data_uploaded"] = False
@@ -117,9 +126,11 @@ class FileUploader:
                         with st.spinner("Mengunggah data..."):
                             self.save_data(df_new, sheet_name)
 
+                        st.success(f"✅ Data berhasil disimpan !")
                         st.session_state["data_uploaded"] = True
-                        time.sleep(10)
+                        time.sleep(2)
 
                         st.rerun()
+
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
