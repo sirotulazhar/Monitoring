@@ -13,27 +13,41 @@ class TokoLadangDashboard:
         self.df_filtered = self.df.copy()
 
     def filter_data(self):
-        # st.subheader("📆 Filter Rentang Waktu")
-        col1, col2, col3,col4 = st.columns(4)
+        # Membuat 4 kolom untuk filter
+        col1, col2, col3, col4 = st.columns(4)
+
+        # Tentukan batas waktu
+        min_date = self.df["Tanggal"].min().date()
+        max_date = self.df["Tanggal"].max().date()
+
+        # Cari default start date: 1 tahun sebelum max_date (kalau ada)
+        default_start_date = self.df[self.df["Tanggal"].dt.date >= max_date.replace(year=max_date.year - 1)]["Tanggal"].min().date()
         
         with col1:
-            start_date = st.date_input("Start Date", min_value=self.df["Tanggal"].min().date(),
-                                       max_value=self.df["Tanggal"].max().date(),
-                                       value=self.df["Tanggal"].min().date())
-        
+            start_date = st.date_input("Start Date", 
+                                    min_value=min_date,
+                                    max_value=max_date,
+                                    value=default_start_date)  # Default ke setahun terakhir
+
         with col2:
-            end_date = st.date_input("End Date", min_value=self.df["Tanggal"].min().date(),
-                                     max_value=self.df["Tanggal"].max().date(),
-                                     value=self.df["Tanggal"].max().date())
+            end_date = st.date_input("End Date", 
+                                    min_value=min_date,
+                                    max_value=max_date,
+                                    value=max_date)  # Default ke tanggal terbaru
+
         with col3:
             st.markdown("<br>", unsafe_allow_html=True)
             if st.button("Semua Data"):
-                start_date = self.df["Tanggal"].min().date()
-                end_date = self.df["Tanggal"].max().date()
-       
-        self.df_filtered = self.df[(self.df["Tanggal"].dt.date >= start_date) &
-                                   (self.df["Tanggal"].dt.date <= end_date)]
-        # with col4:
+                start_date = min_date
+                end_date = max_date
+
+        # Filter DataFrame sesuai rentang waktu yang dipilih
+        self.df_filtered = self.df[
+            (self.df["Tanggal"].dt.date >= start_date) & 
+            (self.df["Tanggal"].dt.date <= end_date)
+        ]
+
+        # Konversi tanggal ke periode mingguan
         self.df_filtered["Minggu"] = self.df_filtered["Tanggal"].dt.to_period("W").astype(str)
         self.df_filtered["Tanggal"] = pd.to_datetime(self.df_filtered["Tanggal"])
         
