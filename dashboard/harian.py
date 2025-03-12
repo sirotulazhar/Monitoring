@@ -11,18 +11,19 @@ class Dashboardharian:
         self.df_filtered = self.df.copy()
 
     def filter_data(self):
-        # st.subheader("📆 Filter Rentang Waktu")  
-        st.markdown("<br>",unsafe_allow_html=True)
+        # Tambahkan sedikit padding agar tampilan lebih rapi
+        st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<style>div[data-testid='stDateInput'] {margin-top: -50px;}</style>", unsafe_allow_html=True)
-        date_pilih = st.date_input(
-            "📆 Filter Rentang Waktu",
-            value=self.df["waktu"].min().date(),
-            min_value=self.df["waktu"].min().date(),
-            max_value=self.df["waktu"].max().date()
-        )
+
+        # Default ke tanggal terbaru (max)
+        default_tanggal = self.df["waktu"].max().date()
+
+        # Pilihan tanggal (hanya satu, bukan rentang)
+        date_pilih = st.date_input("📆 Pilih Tanggal", value=default_tanggal)
+
+        # Filter dataframe berdasarkan tanggal yang dipilih
         self.df_filtered = self.df[self.df["waktu"].dt.date == date_pilih]
 
-    
     def semua_total(self):
         col1, col2, col3, col4 ,col5= st.columns(5)
         st.markdown("""
