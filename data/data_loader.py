@@ -1,20 +1,40 @@
 import pandas as pd
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-import pandas as pd
 import time
 
-conn = st.connection("gsheets", type=GSheetsConnection)
+# Hanya buat koneksi sekali di session_state
+if "gsheets_conn" not in st.session_state:
+    st.session_state["gsheets_conn"] = st.connection("gsheets", type=GSheetsConnection)
 
+conn = st.session_state["gsheets_conn"]
+
+SHEET_NAMES = ["Harian", "merchant registered", "regions and payment methods"]
 
 def load_data(sheet_name):
-    """Mengambil data dari Google Sheets berdasarkan nama sheet."""
-    df = conn.read(worksheet=sheet_name)
+    """Mengambil data dari Google Sheets berdasarkan nama sheet dan menyimpannya dalam session_state."""
+    if "gsheets_data" not in st.session_state:
+        st.session_state["gsheets_data"] = {}
+    
+    if sheet_name not in st.session_state["gsheets_data"]:
+        st.session_state["gsheets_data"][sheet_name] = conn.read(worksheet=sheet_name)
+    
+    return st.session_state["gsheets_data"][sheet_name]
 
-    return df
+# Contoh penggunaan:
+data_harian = load_data("Harian")
+data_merchant = load_data("merchant registered")
+data_regions = load_data("regions and payment methods")
+
+
+# def load_data(sheet_name):
+#     """Mengambil data dari Google Sheets berdasarkan nama sheet."""
+#     df = conn.read(worksheet=sheet_name)
+
+#     return df
 
 def load_regions_data():
-    df = load_data("regions and payment methods")
+    df = data_regions
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
     df['prov_sekolah'] = df['prov_sekolah'].str.strip().str.title()
     df['kota_kab_sekolah'] = df['kota_kab_sekolah'].str.strip().str.title()
@@ -24,7 +44,7 @@ def load_regions_data():
 
 
 def load_merchant():
-    df = load_data("merchant registered")
+    df = data_merchant
     df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
     df['provinsi'] = df['provinsi'].str.strip().str.title()
     df['kab_kota'] = df['kab_kota'].str.strip().str.title()
@@ -38,7 +58,7 @@ def load_users():
     return df
 
 def load_transaksi():
-    df = load_data("Harian")
+    df = data_harian
 
     def parse_mixed_date(date_str):
         try:
@@ -85,8 +105,9 @@ def preprocess_data(df, file_type):
     """Fungsi untuk melakukan preprocessing berdasarkan jenis file."""
 
     if file_type == "regions_payment":
-        df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce').dt.strftime('%m/%d/%Y')
-        df['waktu'].fillna(df['waktu'].fillna(method='ffill'), inplace=True)
+        df['waktu'] = pd.to_datetime(df["waktu"], errors="coerce") 
+        df['waktu'].fillna(method='ffill', inplace=True)  
+        df['waktu'] = df['waktu'].dt.strftime("%Y-%m-%d")  
         df['prov_sekolah'] = df['prov_sekolah'].str.strip().str.title()
         df['prov_sekolah'].fillna(df['prov_sekolah'].mode()[0], inplace=True)
         df['kota_kab_sekolah'] = df['kota_kab_sekolah'].str.strip().str.title()
@@ -108,10 +129,13 @@ def preprocess_data(df, file_type):
             df["total_pajak"] = df["pph22"] + df["ppn"]
 
     elif file_type == "merchant_registered":
-        df['waktu'] = pd.to_datetime(df['waktu'], errors='coerce')
+        df['waktu'] = pd.to_datetime(df["waktu"], errors="coerce").dt.strftime("%Y-%m-%d")
         df['provinsi'] = df['provinsi'].str.strip().str.title()
         df['kab_kota'] = df['kab_kota'].str.strip().str.title()
         df["jumlah_merchant"] = pd.to_numeric(df["jumlah_merchant"], errors="coerce").fillna(0).astype(int)
+
+        # Hapus duplikasi
+        df.drop_duplicates(inplace=True)
     
     elif file_type == "harian":
         df['Bulan'] = df['Bulan'].str.strip().str.title()
