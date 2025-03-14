@@ -14,25 +14,29 @@ DATASETS = {
     "Harian.csv": ("Harian", ["Bulan", "Tanggal", "Jumlah PO", "Jumlah Nominal", "PPh 22", "PPN", "Jumlah Pajak"])
 }
 
+
 def remove_duplicate_headers(df):
     # Pastikan baris pertama adalah header yang benar
     header = df.columns.tolist()
-    
+
     # Hapus baris yang memiliki nilai yang sama dengan header (duplikasi header)
     df = df[~df.apply(lambda row: row.tolist() == header, axis=1)]
-    
+
     return df
+
 
 class FileUploader:
     def load_data(self, sheet_name):
         try:
             df = conn.read(worksheet=sheet_name)
 
-            numeric_cols = ["jumlah_merchant", "jumlah_po", "nominal_po", "pph22", "ppn", "total_pajak", "Jumlah PO", "Jumlah Nominal", "PPh 22", "PPN", "Jumlah Pajak"]
+            numeric_cols = ["jumlah_merchant", "jumlah_po", "nominal_po", "pph22", "ppn",
+                            "total_pajak", "Jumlah PO", "Jumlah Nominal", "PPh 22", "PPN", "Jumlah Pajak"]
             for col in numeric_cols:
                 if col in df.columns:
-                    df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
-            
+                    df[col] = pd.to_numeric(
+                        df[col], errors="coerce").fillna(0).astype(int)
+
             return df.fillna(0)  # Pastikan tidak ada NaN
 
         except Exception as e:
@@ -44,9 +48,6 @@ class FileUploader:
         try:
             # Ambil data lama
             existing_data = self.load_data(sheet_name)
-
-            # Debugging: Tampilkan jumlah data lama
-            st.write(f"📊 Data lama sebelum update: {len(existing_data)} baris")
 
             # **Cek apakah data baru benar-benar ada**
             if df.empty:
@@ -65,20 +66,19 @@ class FileUploader:
             if not existing_data.empty:
                 df_combined = pd.concat([existing_data, df], ignore_index=True)
             else:
-                df_combined = df 
+                df_combined = df
 
             df_combined["waktu"] = pd.to_datetime(df_combined["waktu"], errors="coerce").dt.strftime("%Y-%m-%d")
             df_combined = df_combined.applymap(lambda x: x.strip() if isinstance(x, str) else x)
             df_combined.drop_duplicates(subset=df_combined.columns.tolist(), keep="first", inplace=True)
-            df_combined = remove_duplicate_headers(df_combined)  
+            df_combined = remove_duplicate_headers(df_combined)
 
             st.write(f"🔢 Data setelah digabung: {len(df_combined)} baris")
             st.write("🛠️ Debugging: Data terakhir yang akan disimpan")
-            st.write(df_combined.tail(20))  # Pastikan data baru masuk
+            st.write(df_combined.tail(10))  # Pastikan data baru masuk
 
             conn.update(worksheet=sheet_name, data=df_combined)
-            time.sleep(3) 
-            # st.cache_data.clear()
+            time.sleep(3)
 
         except Exception as e:
             st.error(f"🚨 Gagal memperbarui Google Sheets: {e}")
@@ -110,26 +110,29 @@ class FileUploader:
                     if "pph22" in df_new.columns and "ppn" in df_new.columns:
                         df_new["total_pajak"] = df_new["pph22"].astype(float) + df_new["ppn"].astype(float)
                     else:
-                        df_new["total_pajak"] = 0  
+                        df_new["total_pajak"] = 0
 
                 df_new = df_new[expected_columns]
 
-                # Format tanggal dengan konsisten
                 if "Tanggal" in df_new.columns:
                     df_new["Tanggal"] = pd.to_datetime(df_new["Tanggal"], errors="coerce").dt.strftime("%Y-%m-%d")
+                
                 if "waktu" in df_new.columns:
                     df_new["waktu"] = pd.to_datetime(df_new["waktu"], errors="coerce").dt.strftime("%Y-%m-%d")
 
-                file_type = "regions_payment" if matched_file == "regions and payment methods.csv" else "merchant_registered" if matched_file == "merchant registered.csv" else "harian" 
+                # Preprocessing sesuai jenis data
+                file_type = "regions_payment" if matched_file == "regions and payment methods.csv" else \
+                            "merchant_registered" if matched_file == "merchant registered.csv" else "harian"
                 df_new = preprocess_data(df_new, file_type)
 
                 # Hapus duplikat berdasarkan kolom unik
-                unique_cols = [col for col in expected_columns if col in df_new.columns]
+                unique_cols = [
+                    col for col in expected_columns if col in df_new.columns]
                 df_new.drop_duplicates(subset=unique_cols, inplace=True)
 
                 if not st.session_state["data_uploaded"]:
                     if st.button("📤 Simpan Data"):
-                        with st.spinner("Mengunggah data..."):                            
+                        with st.spinner("Mengunggah data..."):
                             self.save_data(df_new, sheet_name)
 
                         st.session_state["data_uploaded"] = True
@@ -137,6 +140,6 @@ class FileUploader:
 
                 if st.session_state["data_uploaded"]:
                     st.success("✅ Data berhasil disimpan!")
-                    st.stop() 
+                    st.stop()
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
