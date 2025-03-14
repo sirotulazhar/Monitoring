@@ -140,8 +140,9 @@ def preprocess_data(df, file_type):
     elif file_type == "harian":
         df['Bulan'] = df['Bulan'].str.strip().str.title()
 
-        df['Tanggal'] = pd.to_datetime(df['Tanggal'], format="%Y-%m-%d", errors='coerce')
+        df['Tanggal'] = pd.to_datetime(df['Tanggal'], errors="coerce").dt.strftime("%Y-%m-%d")
         df = df.sort_values(by='Tanggal', ascending=True).reset_index(drop=True)
+        df.drop_duplicates(inplace=True)
 
     df.fillna(method='ffill', inplace=True)
     
