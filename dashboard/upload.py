@@ -72,11 +72,7 @@ class FileUploader:
             df_combined = df_combined.applymap(lambda x: x.strip() if isinstance(x, str) else x)
             df_combined.drop_duplicates(subset=df_combined.columns.tolist(), keep="first", inplace=True)
             df_combined = remove_duplicate_headers(df_combined)
-
-            st.write(f"🔢 Data setelah digabung: {len(df_combined)} baris")
-            st.write("🛠️ Debugging: Data terakhir yang akan disimpan")
-            st.write(df_combined.tail(10))  # Pastikan data baru masuk
-
+            
             conn.update(worksheet=sheet_name, data=df_combined)
             time.sleep(3)
 
