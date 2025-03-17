@@ -87,7 +87,7 @@ class FileUploader:
             st.session_state["data_uploaded"] = False
 
         # Jika data belum diunggah, tampilkan uploader
-        if not st.session_state["data_uploaded"]:   
+        if st.session_state["data_uploaded"]:   
             uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
             if uploaded_file:
                 df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
@@ -134,11 +134,9 @@ class FileUploader:
                                 self.save_data(df_new, sheet_name)
     
                             st.session_state["data_uploaded"] = True
-                            # st.success("✅ Data berhasil disimpan!")
-                            time.sleep(3)
+                            st.success("✅ Data berhasil disimpan!")
+                            time.sleep(2)
                             st.rerun()
                         
                 else:
                     st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
-        if st.session_state.get("data_uploaded", False):
-            st.toast(" Data berhasil disimpan!", icon="✅")
