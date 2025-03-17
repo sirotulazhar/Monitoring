@@ -130,6 +130,7 @@ def preprocess_data(df, file_type):
 
     elif file_type == "merchant_registered":
         df['waktu'] = pd.to_datetime(df["waktu"], errors="coerce").dt.strftime("%Y-%m-%d")
+        df = df.sort_values(by='waktu', ascending=True).reset_index(drop=True)
         df['provinsi'] = df['provinsi'].str.strip().str.title()
         df['kab_kota'] = df['kab_kota'].str.strip().str.title()
         df["jumlah_merchant"] = pd.to_numeric(df["jumlah_merchant"], errors="coerce").fillna(0).astype(int)
