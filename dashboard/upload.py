@@ -90,8 +90,8 @@ class FileUploader:
         if "show_popup" not in st.session_state:
             st.session_state["show_popup"] = False
 
-        if "uploaded_file" not in st.session_state:
-            st.session_state["uploaded_file"] = None
+        if "file_key" not in st.session_state:
+            st.session_state["file_key"] = 0
             
         if uploaded_file:
             st.session_state["uploaded_file"] = uploaded_file 
@@ -149,5 +149,5 @@ class FileUploader:
 
             if st.button("OK"):
                 st.session_state["show_popup"] = False  # Reset pop-up
-                st.session_state["uploaded_file"] = None
+                st.session_state["file_key"] += 1
                 st.rerun()
