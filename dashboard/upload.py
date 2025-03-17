@@ -134,8 +134,11 @@ class FileUploader:
                                 self.save_data(df_new, sheet_name)
     
                             st.session_state["data_uploaded"] = True
-                            st.toast(" Data berhasil disimpan!", icon="✅")
+                            st.success("✅ Data berhasil disimpan!")
+                            time.sleep(3)
                             st.rerun()
                         
                 else:
                     st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
+        if st.session_state.get("data_uploaded", False):
+            st.toast(" Data berhasil disimpan!", icon="✅")
