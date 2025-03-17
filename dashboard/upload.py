@@ -132,15 +132,14 @@ class FileUploader:
                 unique_cols = [
                     col for col in expected_columns if col in df_new.columns]
                 df_new.drop_duplicates(subset=unique_cols, inplace=True)
-
-                if st.session_state["uploaded_file"] and st.button("📤 Simpan Data"):
-                    if st.button("📤 Simpan Data"):
-                        with st.spinner("Mengunggah data..."):
-                            self.save_data(df_new, sheet_name)
-                            
-                        st.session_state["data_uploaded"] = True
-                        st.session_state["show_popup"] = True
-                        st.rerun()
+                if not st.session_state["data_uploaded"]:
+                    if st.session_state["uploaded_file"] and st.button("📤 Simpan Data"):
+                            with st.spinner("Mengunggah data..."):
+                                self.save_data(df_new, sheet_name)
+                                
+                            st.session_state["data_uploaded"] = True
+                            st.session_state["show_popup"] = True
+                            st.rerun()
                     
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
