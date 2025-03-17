@@ -86,6 +86,9 @@ class FileUploader:
         uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
         if "data_uploaded" not in st.session_state:
             st.session_state["data_uploaded"] = False
+
+        if "show_popup" not in st.session_state:
+            st.session_state["show_popup"] = False
             
         if uploaded_file:
             df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
