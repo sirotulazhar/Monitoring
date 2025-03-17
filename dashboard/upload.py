@@ -93,7 +93,7 @@ class FileUploader:
         if "uploader_key" not in st.session_state:
             st.session_state["uploader_key"] = 0
  
-        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
+        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"], key=f"uploader_{st.session_state['uploader_key']})
         if uploaded_file:
             st.session_state["uploaded_file"] = uploaded_file 
             df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
@@ -137,9 +137,10 @@ class FileUploader:
                     if st.session_state["uploaded_file"] and st.button("📤 Simpan Data"):
                             with st.spinner("Mengunggah data..."):
                                 self.save_data(df_new, sheet_name)
-                                
                             st.session_state["data_uploaded"] = True
                             st.session_state["show_popup"] = True
+                            st.session_state["uploader_key"] += 1  # Paksa uploader reset
+                            st.rerun()
                            
                     
             else:
@@ -151,7 +152,6 @@ class FileUploader:
             if st.button("OK"):
                 st.session_state["show_popup"] = False
                 st.session_state["uploaded_file"] = None  # Hapus file dari session state
-                st.session_state["uploader_key"] += 1
-                st.markdown("<script>window.location.reload();</script>", unsafe_allow_html=True)
-                st.rerun()
+                st.session_state["uploader_key"] += 1  # Paksa uploader refresh
+                st.rerun() 
 
