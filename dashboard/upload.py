@@ -93,7 +93,10 @@ class FileUploader:
         if "file_key" not in st.session_state:
             st.session_state["file_key"] = 0
  
-        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
+        # uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
+        upload_placeholder = st.empty()
+
+        uploaded_file = upload_placeholder.file_uploader("Pilih file CSV", type=["csv"])
         if uploaded_file:
             st.session_state["uploaded_file"] = uploaded_file 
             df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
@@ -146,6 +149,7 @@ class FileUploader:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
 
         if st.session_state["show_popup"]:
+            upload_placeholder.empty()
             st.success("✅ Data berhasil disimpan!")
 
             if st.button("OK"):
