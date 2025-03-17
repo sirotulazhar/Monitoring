@@ -84,7 +84,7 @@ class FileUploader:
         st.subheader("Upload File")
 
         if "data_uploaded" not in st.session_state:
-        st.session_state["data_uploaded"] = False
+            st.session_state["data_uploaded"] = False
 
         # Jika data belum diunggah, tampilkan uploader
         if not st.session_state["data_uploaded"]:   
