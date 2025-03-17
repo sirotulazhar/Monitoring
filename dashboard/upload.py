@@ -93,7 +93,7 @@ class FileUploader:
         if "uploader_key" not in st.session_state:
             st.session_state["uploader_key"] = 0
  
-        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"], key=f"uploader_{st.session_state['uploader_key']})
+        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"], key=f"uploader_{st.session_state['uploader_key']}")
         if uploaded_file:
             st.session_state["uploaded_file"] = uploaded_file 
             df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
