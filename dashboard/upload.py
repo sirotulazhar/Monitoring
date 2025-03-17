@@ -134,7 +134,7 @@ class FileUploader:
                                 self.save_data(df_new, sheet_name)
     
                             st.session_state["data_uploaded"] = True
-                            st.success("✅ Data berhasil disimpan!")
+                            # st.success("✅ Data berhasil disimpan!")
                             time.sleep(3)
                             st.rerun()
                         
