@@ -135,13 +135,44 @@ class FileUploader:
                             self.save_data(df_new, sheet_name)
 
                         st.session_state["data_uploaded"] = True
+                        st.session_state["data_uploaded"] = True
+                        st.session_state["show_popup"] = True
+                        st.rerun()
                         
                 if st.session_state["show_popup"]:
-                    with st.dialog("✅ Data berhasil disimpan!") as dialog:
-                        if st.button("OK"):
-                            st.session_state["show_popup"] = False
-                            st.session_state["data_uploaded"] = False
-                            st.rerun()
+                    st.markdown(
+                        """
+                        <style>
+                        .modal {
+                            position: fixed;
+                            z-index: 100;
+                            left: 50%;
+                            top: 50%;
+                            width: 300px;
+                            padding: 20px;
+                            background-color: white;
+                            transform: translate(-50%, -50%);
+                            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                            border-radius: 10px;
+                            text-align: center;
+                        }
+                        .modal button {
+                            margin-top: 10px;
+                            padding: 5px 10px;
+                            border: none;
+                            background-color: #4CAF50;
+                            color: white;
+                            cursor: pointer;
+                            border-radius: 5px;
+                        }
+                        </style>
+                        <div class="modal">
+                            <p>✅ Data berhasil disimpan!</p>
+                            <button onclick="window.location.reload()">OK</button>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
                     
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
