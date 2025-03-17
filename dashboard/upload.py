@@ -83,63 +83,62 @@ class FileUploader:
     def run(self):
         """Menjalankan proses upload dan penyimpanan data"""
         st.subheader("Upload File")
-
+        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
         if "data_uploaded" not in st.session_state:
             st.session_state["data_uploaded"] = False
+            
+        if uploaded_file:
+            df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
+            df_new.columns = df_new.columns.str.strip()
 
-        # Jika data belum diunggah, tampilkan uploader
-        if not st.session_state["data_uploaded"]:   
-            uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
-            if uploaded_file:
-                df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
-                df_new.columns = df_new.columns.str.strip()
-    
-                matched_file = None
-                for file_name, (sheet_name, expected_columns) in DATASETS.items():
-                    if uploaded_file.name == file_name:
-                        matched_file = file_name
-                        break
-    
-                if matched_file:
-                    sheet_name = DATASETS[matched_file][0]
-                    expected_columns = DATASETS[matched_file][1]
-    
-                    # Hitung total pajak jika kolomnya belum ada
-                    if "total_pajak" not in df_new.columns:
-                        if "pph22" in df_new.columns and "ppn" in df_new.columns:
-                            df_new["total_pajak"] = df_new["pph22"].astype(float) + df_new["ppn"].astype(float)
-                        else:
-                            df_new["total_pajak"] = 0
-    
-                    df_new = df_new[expected_columns]
-    
-                    if "Tanggal" in df_new.columns:
-                        df_new["Tanggal"] = pd.to_datetime(df_new["Tanggal"], errors="coerce").dt.strftime("%Y-%m-%d")
-                    
-                    if "waktu" in df_new.columns:
-                        df_new["waktu"] = pd.to_datetime(df_new["waktu"], errors="coerce").dt.strftime("%Y-%m-%d")
-    
-                    # Preprocessing sesuai jenis data
-                    file_type = "regions_payment" if matched_file == "regions and payment methods.csv" else \
-                                "merchant_registered" if matched_file == "merchant registered.csv" else "harian"
-                    df_new = preprocess_data(df_new, file_type)
-    
-                    # Hapus duplikat berdasarkan kolom unik
-                    unique_cols = [
-                        col for col in expected_columns if col in df_new.columns]
-                    df_new.drop_duplicates(subset=unique_cols, inplace=True)
-    
-                    if not st.session_state["data_uploaded"]:
-                        if st.button("📤 Simpan Data"):
-                            with st.spinner("Mengunggah data..."):
-                                self.save_data(df_new, sheet_name)
-    
-                            st.session_state["data_uploaded"] = True
-                           
-                            time.sleep(2)
-                            st.rerun()
+            matched_file = None
+            for file_name, (sheet_name, expected_columns) in DATASETS.items():
+                if uploaded_file.name == file_name:
+                    matched_file = file_name
+                    break
+
+            if matched_file:
+                sheet_name = DATASETS[matched_file][0]
+                expected_columns = DATASETS[matched_file][1]
+
+                # Hitung total pajak jika kolomnya belum ada
+                if "total_pajak" not in df_new.columns:
+                    if "pph22" in df_new.columns and "ppn" in df_new.columns:
+                        df_new["total_pajak"] = df_new["pph22"].astype(float) + df_new["ppn"].astype(float)
+                    else:
+                        df_new["total_pajak"] = 0
+
+                df_new = df_new[expected_columns]
+
+                if "Tanggal" in df_new.columns:
+                    df_new["Tanggal"] = pd.to_datetime(df_new["Tanggal"], errors="coerce").dt.strftime("%Y-%m-%d")
+                
+                if "waktu" in df_new.columns:
+                    df_new["waktu"] = pd.to_datetime(df_new["waktu"], errors="coerce").dt.strftime("%Y-%m-%d")
+
+                # Preprocessing sesuai jenis data
+                file_type = "regions_payment" if matched_file == "regions and payment methods.csv" else \
+                            "merchant_registered" if matched_file == "merchant registered.csv" else "harian"
+                df_new = preprocess_data(df_new, file_type)
+
+                # Hapus duplikat berdasarkan kolom unik
+                unique_cols = [
+                    col for col in expected_columns if col in df_new.columns]
+                df_new.drop_duplicates(subset=unique_cols, inplace=True)
+
+                if not st.session_state["data_uploaded"]:
+                    if st.button("📤 Simpan Data"):
+                        with st.spinner("Mengunggah data..."):
+                            self.save_data(df_new, sheet_name)
+
+                        st.session_state["data_uploaded"] = True
                         
-                else:
-                    st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
-        else:
-            st.toast(" Data berhasil disimpan!", icon="✅")
+                if st.session_state["data_uploaded"]:
+                    with st.modal("✅ Data berhasil disimpan!", key="notif_modal"):
+                        st.write("File telah berhasil diunggah dan disimpan ke database.")
+                        if st.button("OK"):
+                            st.session_state["data_uploaded"] = False
+                            st.rerun()
+                    
+            else:
+                st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
