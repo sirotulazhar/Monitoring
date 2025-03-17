@@ -144,7 +144,7 @@ class FileUploader:
                             st.session_state["show_popup"] = False
                             st.session_state["uploaded_file"] = None  # Hapus file dari session state
                             st.session_state["uploader_key"] += 1  # Paksa uploader refresh
-                            time.sleep(2)
+                            time.sleep(3)
                             st.rerun()
                     
             else:
