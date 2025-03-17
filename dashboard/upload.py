@@ -74,7 +74,8 @@ class FileUploader:
             df_combined = remove_duplicate_headers(df_combined)
             
             conn.update(worksheet=sheet_name, data=df_combined)
-            time.sleep(3)
+
+            st.session_state["data_uploaded"] = True
 
         except Exception as e:
             st.error(f"🚨 Gagal memperbarui Google Sheets: {e}")
@@ -134,9 +135,11 @@ class FileUploader:
                                 self.save_data(df_new, sheet_name)
     
                             st.session_state["data_uploaded"] = True
-                            st.success("✅ Data berhasil disimpan!")
+                           
                             time.sleep(2)
                             st.rerun()
                         
                 else:
                     st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
+        else:
+            st.toast(" Data berhasil disimpan!", icon="✅")
