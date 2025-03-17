@@ -148,6 +148,6 @@ class FileUploader:
             st.success("✅ Data berhasil disimpan!")
 
             if st.button("OK"):
-                st.session_state["show_popup"] = False  # Reset pop-up
-                st.session_state["file_key"] += 1
+                st.markdown("<script>window.location.reload();</script>", unsafe_allow_html=True)
+
                 st.rerun()
