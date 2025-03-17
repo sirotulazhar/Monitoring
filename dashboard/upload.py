@@ -133,10 +133,10 @@ class FileUploader:
 
                         st.session_state["data_uploaded"] = True
                         
-                if st.session_state["data_uploaded"]:
-                    with st.modal("✅ Data berhasil disimpan!", key="notif_modal"):
-                        st.write("File telah berhasil diunggah dan disimpan ke database.")
+                if st.session_state["show_popup"]:
+                    with st.dialog("✅ Data berhasil disimpan!") as dialog:
                         if st.button("OK"):
+                            st.session_state["show_popup"] = False
                             st.session_state["data_uploaded"] = False
                             st.rerun()
                     
