@@ -82,12 +82,12 @@ class FileUploader:
     def run(self):
         """Menjalankan proses upload dan penyimpanan data"""
         st.subheader("Upload File")
-        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
 
         if "data_uploaded" not in st.session_state:
             st.session_state["data_uploaded"] = False
 
         if uploaded_file:
+            uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
             df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
             df_new.columns = df_new.columns.str.strip()
 
@@ -135,7 +135,7 @@ class FileUploader:
                         st.rerun()
 
                 if st.session_state["data_uploaded"]:
-                    st.success("✅ Data berhasil disimpan!")
+                    st.toast("✅ Data berhasil disimpan!", icon="🎉")
                     st.stop()
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
