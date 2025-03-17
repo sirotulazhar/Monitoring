@@ -89,8 +89,12 @@ class FileUploader:
 
         if "show_popup" not in st.session_state:
             st.session_state["show_popup"] = False
+
+        if "uploaded_file" not in st.session_state:
+            st.session_state["uploaded_file"] = None
             
         if uploaded_file:
+            st.session_state["uploaded_file"] = uploaded_file 
             df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
             df_new.columns = df_new.columns.str.strip()
 
@@ -129,7 +133,7 @@ class FileUploader:
                     col for col in expected_columns if col in df_new.columns]
                 df_new.drop_duplicates(subset=unique_cols, inplace=True)
 
-                if not st.session_state["data_uploaded"]:
+                if st.session_state["uploaded_file"] and st.button("📤 Simpan Data"):
                     if st.button("📤 Simpan Data"):
                         with st.spinner("Mengunggah data..."):
                             self.save_data(df_new, sheet_name)
@@ -146,4 +150,5 @@ class FileUploader:
 
             if st.button("OK"):
                 st.session_state["show_popup"] = False  # Reset pop-up
+                st.session_state["uploaded_file"] = None
                 st.rerun()
