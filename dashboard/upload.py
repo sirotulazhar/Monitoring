@@ -83,7 +83,7 @@ class FileUploader:
     def run(self):
         """Menjalankan proses upload dan penyimpanan data"""
         st.subheader("Upload File")
-        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
+
         if "data_uploaded" not in st.session_state:
             st.session_state["data_uploaded"] = False
 
@@ -92,7 +92,8 @@ class FileUploader:
 
         if "file_key" not in st.session_state:
             st.session_state["file_key"] = 0
-            
+ 
+        uploaded_file = st.file_uploader("Pilih file CSV", type=["csv"])
         if uploaded_file:
             st.session_state["uploaded_file"] = uploaded_file 
             df_new = pd.read_csv(uploaded_file, dtype=str, encoding="utf-8", sep=",")
@@ -149,5 +150,5 @@ class FileUploader:
 
             if st.button("OK"):
                 st.markdown("<script>window.location.reload();</script>", unsafe_allow_html=True)
-
                 st.rerun()
+
