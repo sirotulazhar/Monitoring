@@ -137,21 +137,15 @@ class FileUploader:
                     if st.session_state["uploaded_file"] and st.button("📤 Simpan Data"):
                             with st.spinner("Mengunggah data..."):
                                 self.save_data(df_new, sheet_name)
+                                
                             st.session_state["data_uploaded"] = True
-                            st.session_state["show_popup"] = True
-                            st.session_state["uploader_key"] += 1  # Paksa uploader reset
+                            st.success("✅ Data berhasil disimpan!")
+
+                            st.session_state["show_popup"] = False
+                            st.session_state["uploaded_file"] = None  # Hapus file dari session state
+                            st.session_state["uploader_key"] += 1  # Paksa uploader refresh
+                            time.sleep(2)
                             st.rerun()
-                           
                     
             else:
                 st.error("🚨 Nama file tidak cocok dengan dataset yang tersedia!")
-
-        if st.session_state["show_popup"]:
-            st.success("✅ Data berhasil disimpan!")
-
-            if st.button("OK"):
-                st.session_state["show_popup"] = False
-                st.session_state["uploaded_file"] = None  # Hapus file dari session state
-                st.session_state["uploader_key"] += 1  # Paksa uploader refresh
-                st.rerun() 
-
