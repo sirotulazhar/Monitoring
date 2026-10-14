@@ -114,4 +114,4 @@ class ProvinceDashboard(BaseDashboard):
             st.info('Jumlah Pajak', icon="📊")
             st.metric(label='', value=format_rupiah(total_pajak))
 
-        st.caption("Dashboard ©️ 2025 by Toko Ladang")
+        st.caption("Dashboard ©️ 2025 by Toko Azhar")
