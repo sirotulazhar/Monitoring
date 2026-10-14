@@ -166,7 +166,7 @@ class Dashboardharian:
         self.prov_tren()
  
         st.markdown("<br><br><br>", unsafe_allow_html=True)
-        st.caption("Dashboard ©️ 2025 by Toko Ladang")
+        st.caption("Dashboard ©️ 2025 by Toko Azhar")
 
 if __name__ == "__main__":
     dashboard = Dashboardharian()
