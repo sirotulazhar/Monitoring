@@ -1,4 +1,11 @@
 import streamlit as st
+
+st.set_page_config(
+    page_title="Toko Ladang",
+    page_icon="🛒",
+    layout="wide"
+)
+
 from data.data_loader import load_regions_data,load_merchant,load_transaksi,load_harian
 from dashboard.provinsi import ProvinceDashboard
 from dashboard.kota import CityDashboard
@@ -20,7 +27,7 @@ if "logged_in" not in st.session_state:
     st.session_state.role = ""
 
 if not st.session_state.logged_in:
-    st.set_page_config(page_title="Login - Toko Ladang", page_icon="🛒", layout="centered")
+    # st.set_page_config(page_title="Login - Toko Ladang", page_icon="🛒", layout="centered")
     st.markdown(
     """
     <style>
@@ -61,7 +68,7 @@ if not st.session_state.logged_in:
             st.error("Username atau password salah!")
 
 else:
-    st.set_page_config(page_title='Toko Ladang', page_icon='🛒', layout='wide')
+    # st.set_page_config(page_title='Toko Ladang', page_icon='🛒', layout='wide')
     st.markdown("""
                 <style>
                     .stAlert { margin-bottom: 0px !important; }  /* Hapus jarak bawah info */
