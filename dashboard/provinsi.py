@@ -44,10 +44,10 @@ class ProvinceDashboard(BaseDashboard):
                 self.selected_provinsi = st.selectbox("Provinsi", options=self.df['prov_sekolah'].unique())
 
             self.filtered_df = self.df[
-                (self.df['waktu'] >= pd.Timestamp(start_date)) &
-                (self.df['waktu'] <= pd.Timestamp(end_date)) &
-                (self.df['prov_sekolah'] == self.selected_provinsi)
-            ]
+                (self.df["waktu"] >= pd.Timestamp(start_date)) &
+                (self.df["waktu"] < pd.Timestamp(end_date) + pd.Timedelta(days=1)) &
+                (self.df["prov_sekolah"] == self.selected_provinsi)
+            ].copy()
 
             if self.filtered_df.empty:
                 st.warning("Tidak ada data dalam rentang waktu yang dipilih.")
