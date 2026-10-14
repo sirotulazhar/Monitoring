@@ -24,13 +24,20 @@ class CityDashboard(BaseDashboard):
             </style>
         """, unsafe_allow_html=True)
                 
-            with col3:
-                max_date = self.df['waktu'].max()
-                min_date = self.df['waktu'].min()
-                default_start_date = max_date - pd.DateOffset(years=1)  # Setahun terakhir
+            with col3:        
+                max_date = pd.to_datetime(self.df['waktu']).max().date()
+                min_date = pd.to_datetime(self.df['waktu']).min().date()
+                
+                # Default rentang waktu satu tahun terakhir,
+                # tetapi tidak boleh melewati tanggal minimum data
+                default_start_date = max(
+                    (pd.Timestamp(max_date) - pd.DateOffset(years=1)).date(),
+                    min_date
+                )
+                
                 start_date, end_date = st.date_input(
                     "Rentang Waktu",
-                    value=[default_start_date, max_date],  # Default setahun terakhir
+                    value=(default_start_date, max_date),
                     min_value=min_date,
                     max_value=max_date
                 )
