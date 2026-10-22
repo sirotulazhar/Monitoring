@@ -26,6 +26,10 @@ if "logged_in" not in st.session_state:
     st.session_state.username = ""
     st.session_state.role = ""
 
+def use_demo_account():
+    st.session_state.login_username = "admin@gmail.com"
+    st.session_state.login_password = "admin123"
+
 if not st.session_state.logged_in:
     # Inisialisasi nilai input login
     if "login_username" not in st.session_state:
@@ -69,44 +73,48 @@ if not st.session_state.logged_in:
     with col2:
         st.title("Login")
 
-        with st.form("Login"):
-            username = st.text_input(
-                "Username",
-                key="login_username"
-            )
+        
+with st.form("Login"):
+    username = st.text_input(
+        "Username",
+        key="login_username"
+    )
 
-            password = st.text_input(
-                "Password",
-                type="password",
-                key="login_password"
-            )
+    password = st.text_input(
+        "Password",
+        type="password",
+        key="login_password"
+    )
 
-            login_btn = st.form_submit_button(
-                "Login",
-                use_container_width=True
-            )
+    login_btn = st.form_submit_button(
+        "Login",
+        use_container_width=True
+    )
 
-        # Informasi akun demo
-        st.markdown(
-            """
-            <div class="demo-info">
-                <strong>🧪 Akun Demo untuk Testing</strong>
-                <p>Gunakan akun berikut untuk mencoba fitur dashboard.</p>
-                <p><strong>Username:</strong> admin@gmail.com</p>
-                <p><strong>Password:</strong> admin123</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # Tombol untuk mengisi akun demo secara otomatis
-        if st.button(
-            "Pakai Akun Demo",
-            use_container_width=True
-        ):
-            st.session_state.login_username = "admin@gmail.com"
-            st.session_state.login_password = "admin123"
-            st.rerun()
+    # Informasi akun demo
+    st.markdown(
+        """
+        <div style="
+            padding: 16px;
+            margin-top: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            background-color: #eff6ff;
+            color: #1e3a8a;
+        ">
+            <strong>🧪 Akun Demo untuk Testing</strong>
+            <p>Gunakan akun berikut untuk mencoba fitur dashboard.</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    st.button(
+        "Pakai Akun Demo",
+        use_container_width=True,
+        on_click=use_demo_account
+    )
 
     if login_btn:
         role = authenticate(username, password)
