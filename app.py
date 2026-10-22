@@ -66,21 +66,6 @@ if not st.session_state.logged_in:
                 background-color: white;
                 text-align: center;
             }
-
-            .demo-info {
-                padding: 16px 20px;
-                margin-top: 12px;
-                margin-bottom: 10px;
-                border: 1px solid #dbeafe;
-                border-radius: 10px;
-                background-color: #eff6ff;
-                color: #1e3a8a;
-            }
-
-            .demo-info p {
-                margin-bottom: 6px;
-                font-size: 14px;
-            }
         </style>
         """,
         unsafe_allow_html=True
@@ -108,17 +93,6 @@ if not st.session_state.logged_in:
                 "Login",
                 use_container_width=True
             )
-
-        # Informasi akun demo
-        st.markdown(
-            """
-            <div class="demo-info">
-                <strong>🧪 Akun Demo untuk Testing</strong>
-                <p>Gunakan akun berikut untuk mencoba fitur dashboard.</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
 
         # Tombol mengisi akun demo secara otomatis
         st.button(
