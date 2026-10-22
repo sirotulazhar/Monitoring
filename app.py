@@ -27,38 +27,90 @@ if "logged_in" not in st.session_state:
     st.session_state.role = ""
 
 if not st.session_state.logged_in:
-    # st.set_page_config(page_title="Login - Toko Azhar", page_icon="🛒", layout="centered")
+    # Inisialisasi nilai input login
+    if "login_username" not in st.session_state:
+        st.session_state.login_username = ""
+
+    if "login_password" not in st.session_state:
+        st.session_state.login_password = ""
+
     st.markdown(
-    """
-    <style>
-        .login-container {
-            max-width: -10000000px;  /* Atur lebar login box */
-            margin: auto;  /* Tengah layar */
-            border-radius: 0px;
-            background-color: white;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-    </style>
-    <div class="login-container">
-    """,
-    unsafe_allow_html=True)
+        """
+        <style>
+            .login-container {
+                max-width: 600px;
+                margin: auto;
+                border-radius: 12px;
+                background-color: white;
+                text-align: center;
+            }
 
-    col1, col2, col3 = st.columns([1, 3, 1])  # Tengah = 2 kali lebih besar
+            .demo-info {
+                padding: 16px 20px;
+                margin-top: 12px;
+                margin-bottom: 10px;
+                border: 1px solid #dbeafe;
+                border-radius: 10px;
+                background-color: #eff6ff;
+                color: #1e3a8a;
+            }
 
-    with col2:  # Menempatkan form di tengah
-        st.markdown('<div class="login-container">', unsafe_allow_html=True)
+            .demo-info p {
+                margin-bottom: 6px;
+                font-size: 14px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    col1, col2, col3 = st.columns([1, 3, 1])
+
+    with col2:
+        st.title("Login")
 
         with st.form("Login"):
-            st.title("Login")
-            username = st.text_input("Username")
-            password = st.text_input("Password", type="password")
-            login_btn = st.form_submit_button("Login")
+            username = st.text_input(
+                "Username",
+                key="login_username"
+            )
 
-        st.markdown('</div>', unsafe_allow_html=True)
+            password = st.text_input(
+                "Password",
+                type="password",
+                key="login_password"
+            )
+
+            login_btn = st.form_submit_button(
+                "Login",
+                use_container_width=True
+            )
+
+        # Informasi akun demo
+        st.markdown(
+            """
+            <div class="demo-info">
+                <strong>🧪 Akun Demo untuk Testing</strong>
+                <p>Gunakan akun berikut untuk mencoba fitur dashboard.</p>
+                <p><strong>Username:</strong> admin@gmail.com</p>
+                <p><strong>Password:</strong> admin123</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Tombol untuk mengisi akun demo secara otomatis
+        if st.button(
+            "Pakai Akun Demo",
+            use_container_width=True
+        ):
+            st.session_state.login_username = "admin@gmail.com"
+            st.session_state.login_password = "admin123"
+            st.rerun()
 
     if login_btn:
         role = authenticate(username, password)
+
         if role:
             st.session_state.logged_in = True
             st.session_state.username = username
